@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#21133f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+<link rel="shortcut icon" href="icons/favicon.ico">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="کار یار">
+<title>کار یار ۴.۰ آزمایشی | دفتر جادویی کارها</title>
+<style>
+@font-face{font-family:'Vazirmatn';src:url('fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('fonts/Vazirmatn-Medium.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+:root{--ink:#173b70;--muted:#667a98;--line:#d3e1f3;--blue:#287df1;--green:#159b61;--red:#e6504b;--amber:#b87800;--bg:#f3f7fd}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#fbfdff,#edf4ff);font-family:'Vazirmatn',Tahoma,Arial,sans-serif;color:var(--ink)}button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{max-width:1120px;margin:auto;padding:12px 10px 92px;min-height:100dvh}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;background:#e4efff;border:1px solid var(--line);border-radius:15px;padding:12px;margin-bottom:10px}
+.date{font-size:clamp(14px,3vw,20px);font-weight:700}.top-actions{display:flex;gap:6px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:white;color:var(--ink);border-radius:9px;padding:8px 10px;font-size:13px}
+.summary{display:flex;gap:7px;overflow:auto;padding:1px 0 10px;margin-bottom:3px}.filter{white-space:nowrap;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:20px;padding:8px 12px;font-size:12px}.filter.active{background:var(--blue);color:white;border-color:var(--blue)}
+.notice{display:none;border:1px solid #f2d18d;background:#fff8e8;color:#805500;border-radius:10px;padding:9px 11px;margin:0 0 10px;font-size:12px;line-height:1.7}.notice.show{display:block}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:start}
+.card{min-width:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 3px 12px #1a4b7a0b;position:relative}
+.card.completed{background:#e3f8eb;border-color:#92d5ac}.card.completed .card-title{background:#cef0d9}
+.card.overdue{border-color:#f0a6a1}.card.overdue .card-title{background:#fff0ef}
+.card.cancelled,.card.postponed{opacity:.88;background:#f4f6fa}
+.card-title{width:100%;border:0;border-bottom:1px solid #e6eef9;background:#e7f1ff;color:var(--ink);font-weight:700;font-size:clamp(11px,2.3vw,15px);padding:9px 4px;min-height:40px;overflow-wrap:anywhere}
+.card-body{padding:7px;display:grid;gap:7px}
+.meta{display:flex;justify-content:space-between;gap:4px;font-size:10px;color:var(--muted);line-height:1.5}.meta span{overflow:hidden;text-overflow:ellipsis;min-width:0}.meta span:first-child{flex:1 1 auto;overflow-wrap:anywhere}.meta .priority-badge{flex:0 0 auto;max-width:48%;white-space:normal;overflow-wrap:anywhere;justify-content:center}.card-body,.card-foot,.card-title,.desc,.desc-toggle{min-width:0;max-width:100%}.desc{overflow-wrap:anywhere;word-break:break-word}.card-foot>span{min-width:0;overflow-wrap:anywhere}.card-foot>span:last-child{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}
+.desc-toggle,.status{width:100%;display:flex;align-items:center;justify-content:space-between;gap:4px;border:1px solid var(--line);border-radius:8px;background:#f8fbff;color:var(--ink);padding:7px 6px;min-height:32px;font-size:clamp(10px,1.9vw,12px);text-align:right}
+.desc-toggle span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chev{font-size:15px;color:#7287a5;flex:none}
+.desc{width:100%;min-height:90px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:8px;background:#fff;color:#233b5d;font-size:12px;line-height:1.7}.desc[hidden]{display:none}
+.status{padding:6px 5px;background:#edf5ff}.due{display:grid;grid-template-columns:1fr 1fr;gap:5px}.due input{width:100%;min-width:0;border:1px solid var(--line);border-radius:7px;padding:6px 4px;font-size:10px;color:var(--ink)}
+.priority{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:6px;font-size:11px;color:var(--ink)}
+.actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.action{min-width:0;border-radius:8px;height:35px;border:1px solid;display:grid;place-items:center;font-size:21px;font-weight:700;background:white}
+.cancel{color:var(--red);border-color:#ffaaa7;background:#fff1f1}.done{color:var(--green);border-color:#a6e0c5;background:#effbf5}.move{color:var(--blue);border-color:#a9ccff;background:#f0f6ff}
+.card-foot{display:flex;justify-content:space-between;gap:4px;padding:0 7px 7px}.mini{border:0;background:transparent;color:var(--muted);font-size:10px;text-decoration:underline;padding:2px}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px 10px;background:#fff;border:1px dashed var(--line);border-radius:12px}
+.footer{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:10px;padding:10px;background:#f4f8ffed;backdrop-filter:blur(8px);border-top:1px solid #e0eafa;z-index:3}.add{width:52px;height:52px;border:0;border-radius:50%;background:var(--blue);color:white;font-size:33px;line-height:1;box-shadow:0 6px 18px #287df13b}
+.backdrop{position:fixed;inset:0;background:#102b4d75;display:none;align-items:center;justify-content:center;padding:14px;z-index:10}.backdrop.open{display:flex}.modal{width:min(480px,100%);max-height:90dvh;overflow:auto;background:#fff;border-radius:16px;padding:17px;box-shadow:0 15px 45px #0b234544}.modal h2{font-size:18px;margin:0 0 13px}
+.field{display:grid;gap:5px;margin-bottom:11px}.field label{font-size:12px;color:var(--muted)}.field input,.field textarea,.field select{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;color:var(--ink);background:#fff}.jalali-picker{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:6px}.jalali-picker select{min-width:0;width:100%;padding:10px 5px;border:1px solid var(--line);border-radius:9px;color:var(--ink);background:#fff;font:inherit}.field textarea{min-height:90px;resize:vertical;line-height:1.7}.time-picker{display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:8px}.time-picker select{min-width:0;width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);font:inherit}.modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.primary,.secondary,.danger{border:0;border-radius:9px;padding:10px 14px}.primary{background:var(--blue);color:white}.secondary{background:#edf3fb;color:var(--ink)}.danger{background:#ffeded;color:#b12e29}
+.list{display:grid;gap:7px;margin:12px 0}.rowitem{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e1eafa;border-radius:9px;padding:8px}.small{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:7px;padding:6px 8px;font-size:11px}
+.historyline{font-size:11px;line-height:1.7;color:var(--muted);border-top:1px dashed var(--line);padding-top:5px;margin-top:3px}
+@media(max-width:380px){.app{padding:8px 6px 80px}.grid{gap:5px}.card-body{padding:5px;gap:5px}.card-title{padding:8px 3px;min-height:37px}.desc-toggle{padding:6px 4px}.action{height:32px;font-size:19px}.status{font-size:10px}.meta{font-size:9px}}
+@media(min-width:700px){.app{padding-top:22px}.grid{gap:13px}.card-body{padding:11px;gap:9px}.action{height:43px}.desc-toggle,.status{min-height:39px}.card-title{min-height:46px}}
+
+/* V2.5 visual refresh, reviewed and refined in V2.6 */
+:root{--ink:#1b3157;--muted:#71809b;--line:#e0e7f4;--blue:#5578f6;--green:#18a875;--red:#ed6474;--amber:#e6a23c;--bg:#f6f7ff}
+body{background:radial-gradient(ellipse at 10% 0%,#e8eaff 0,transparent 36%),radial-gradient(ellipse at 100% 20%,#e2f8f2 0,transparent 32%),#f7f8fc;color:var(--ink)}
+.app{max-width:1180px;padding-top:16px}
+.top{background:linear-gradient(125deg,#fff 0%,#f0f3ff 58%,#e9fbf5 100%);border:1px solid #e1e7fa;border-radius:22px;padding:18px;box-shadow:0 8px 28px #273c7910}
+.date{font-size:clamp(17px,3vw,24px);letter-spacing:-.3px}.top-actions .btn{border-radius:12px;padding:10px 12px;transition:transform .18s,box-shadow .18s}.btn:hover{transform:translateY(-2px);box-shadow:0 5px 14px #273c7914}
+.summary{padding:5px 0 13px;gap:8px}.filter{border-radius:999px;padding:10px 15px;border-color:#e2e8f5;box-shadow:0 2px 5px #263c7907;transition:all .18s}.filter.active{background:linear-gradient(135deg,#5c7cfa,#7b65e8);border-color:transparent;box-shadow:0 5px 13px #6579ed35}
+#search{border-radius:14px!important;border-color:#e0e6f4!important;padding:13px!important;box-shadow:0 3px 12px #263c7908}
+.grid{gap:13px}.card{border-radius:18px;border-color:#e5eaf5;box-shadow:0 5px 18px #293c700c;transition:transform .2s,box-shadow .2s,border-color .2s}.card:hover{transform:translateY(-3px);box-shadow:0 12px 28px #293c7015}
+.card-title{background:linear-gradient(120deg,#f0f4ff,#f7f3ff);border-bottom:1px solid #e9eafa;padding:13px 10px;min-height:52px;font-size:clamp(12px,2.3vw,16px);line-height:1.55;text-align:right}
+.card-body{padding:10px;gap:9px}.meta{align-items:center;font-size:11px}.priority-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 8px;border-radius:999px;font-weight:700;font-size:10px;white-space:nowrap;background:#f0f3fa;color:#68758c}.priority-badge.important{background:#fff3d8;color:#94600b}.priority-badge.urgent{background:#ffe7eb;color:#c3334d;box-shadow:0 0 0 2px #ffe7eb66}.card.urgent-card{border-color:#f4a0ad;box-shadow:0 5px 20px #e85e7519}.card.urgent-card .card-title{background:linear-gradient(120deg,#fff0f2,#fff8f1)}.card.important-card{border-color:#f0d18d}.card.completed{background:linear-gradient(140deg,#f0fff6,#e3f8eb);border-color:#8bd8b0}.card.completed .card-title{background:linear-gradient(120deg,#dff8e9,#eefcf3)}
+.desc-toggle{border-radius:11px;padding:9px 10px;min-height:39px;background:#fafbff;border-color:#e6ebf6}.status{border-radius:10px}.actions{gap:8px}.action{height:42px;border-radius:12px;font-size:23px;transition:transform .15s,filter .15s,box-shadow .15s}.action:hover{transform:translateY(-2px);filter:saturate(1.1);box-shadow:0 5px 12px #263c7912}.cancel{background:#fff2f3;border-color:#ffc4cb;color:#db4054}.done{background:#edfbf4;border-color:#a5e6c8;color:#12875c}.move{background:#eef3ff;border-color:#bfd0ff;color:#4d6fe8}.card-foot{padding:0 10px 10px;align-items:center}.mini{font-size:11px;padding:4px 5px}.footer{background:#f8f9ffdd;border-color:#e7eafa;padding:12px}.add{width:58px;height:58px;background:linear-gradient(145deg,#6786ff,#775de5);box-shadow:0 8px 22px #6c71ed55;transition:transform .18s}.add:hover{transform:scale(1.07) rotate(5deg)}
+.modal{border-radius:22px;padding:21px;box-shadow:0 24px 70px #14264c40}.modal h2{font-size:20px}.field input,.field textarea,.field select,.jalali-picker select{border-radius:12px;border-color:#e0e7f4;padding:12px}.primary{background:linear-gradient(135deg,#5d7df6,#7963e8);border-radius:12px;box-shadow:0 5px 13px #6c71ed28}.secondary,.danger{border-radius:12px}.empty{border-radius:20px;padding:42px 15px;background:linear-gradient(145deg,#fff,#f7f8ff);line-height:2}
+@media(max-width:600px){.app{padding:8px 8px 90px}.top{padding:13px;border-radius:17px}.top-actions{gap:5px}.top-actions .btn{font-size:11px;padding:8px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card-title{min-height:48px;padding:10px 7px}.card-body{padding:8px;gap:7px}.action{height:37px}.meta{font-size:10px}}
+@media(max-width:350px){.grid{grid-template-columns:1fr}.top-actions .btn{font-size:10px}}
+@media(max-width:600px){.meta{align-items:flex-start}.meta .priority-badge{font-size:9px;padding:4px 5px}.card-foot{flex-wrap:wrap}.time-picker{gap:5px}.time-picker select{padding:10px 5px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* V2.8: overflow and responsive hardening */
+.card,.card-body,.card-foot,.card-foot>span,.meta,.meta>span,.desc-toggle,.desc-toggle span:first-child,.desc,.actions,.action{min-width:0;max-width:100%;}
+.card{contain:inline-size;}
+.card-title,.desc,.card-foot,.card-foot>span{overflow-wrap:anywhere;word-break:break-word;}
+.meta{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;}
+.meta>span:first-child{white-space:normal;overflow-wrap:anywhere;}
+.meta .priority-badge{max-width:100%;white-space:normal;}
+.card-foot{flex-wrap:wrap;}
+.card-foot>span:last-child{min-width:0;max-width:100%;}
+.time-picker .clear-time{white-space:nowrap;}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8aa8ff;outline-offset:2px;}
+@media(max-width:430px){.grid{grid-template-columns:minmax(0,1fr);}.card-title{font-size:15px}.meta{grid-template-columns:minmax(0,1fr) auto}.card-body{padding:10px}.actions{gap:8px}}
+@media(max-width:360px){.time-picker{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);}.time-picker .clear-time{grid-column:1/-1;width:100%}.top-actions .btn{max-width:100%;white-space:normal}}
+
+/* V2.8: overflow and responsive hardening */
+.card,.card-body,.card-foot,.card-foot>span,.meta,.meta>span,.desc-toggle,.desc-toggle span:first-child,.desc,.actions,.action{min-width:0;max-width:100%;}
+.card{contain:inline-size;}
+.card-title,.desc,.card-foot,.card-foot>span{overflow-wrap:anywhere;word-break:break-word;}
+.meta{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;}
+.meta>span:first-child{white-space:normal;overflow-wrap:anywhere;}
+.meta .priority-badge{max-width:100%;white-space:normal;}
+.card-foot{flex-wrap:wrap;}
+.card-foot>span:last-child{min-width:0;max-width:100%;}
+.time-picker .clear-time{white-space:nowrap;}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8aa8ff;outline-offset:2px;}
+@media(max-width:430px){.grid{grid-template-columns:minmax(0,1fr);}.card-title{font-size:15px}.meta{grid-template-columns:minmax(0,1fr) auto}.card-body{padding:10px}.actions{gap:8px}}
+@media(max-width:360px){.time-picker{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);}.time-picker .clear-time{grid-column:1/-1;width:100%}.top-actions .btn{max-width:100%;white-space:normal}}
+
+
+/* V2.9 — Fantasy UI: Moonlit Garden / stardust notebook */
+:root{
+ --ink:#29204f;--muted:#756b99;--line:#e3dcfb;--blue:#7762e9;--green:#159b76;--red:#e75e82;--amber:#d78a2e;
+ --fantasy-night:#211b4b;--fantasy-violet:#7865e8;--fantasy-pink:#f4a9d2;--fantasy-mint:#9de8d4;--fantasy-gold:#f6d98a;
+}
+html{background:#f6f1ff;scroll-behavior:smooth}
+body{
+ color:var(--ink);
+ background:
+  radial-gradient(ellipse at 8% 8%,#f8c8e6a8 0,transparent 28%),
+  radial-gradient(ellipse at 92% 2%,#c9c5ffb8 0,transparent 31%),
+  radial-gradient(ellipse at 80% 76%,#c9f4e6a0 0,transparent 28%),
+  linear-gradient(155deg,#fbf8ff 0%,#f3f0ff 48%,#f1fbf8 100%);
+ background-attachment:fixed;
+}
+.app{max-width:1240px;padding-top:22px}
+.top{
+ position:relative;isolation:isolate;overflow:hidden;gap:16px;
+ background:linear-gradient(118deg,#292052 0%,#51418d 52%,#7765bd 100%);
+ color:#fff;border:1px solid #8274c6;border-radius:28px;padding:22px 24px;
+ box-shadow:0 16px 38px #39266c26, inset 0 1px #ffffff30;
+}
+.top::before{content:"✦  دفتر جادویی کارها  ✧";display:block;position:absolute;z-index:-1;inset-inline-end:18px;top:7px;color:#f9e9ad;font-size:10px;letter-spacing:1.5px;opacity:.95}
+.top::after{content:"✦  ✧  ·  ✦";position:absolute;z-index:-1;inset-inline-end:7%;bottom:-25px;font-size:76px;line-height:1;color:#e6dfff;opacity:.11;transform:rotate(-12deg);pointer-events:none}
+.date{color:#fff;font-size:clamp(19px,3vw,27px);line-height:1.7;text-shadow:0 2px 16px #17103966;padding-top:10px}
+#daySummary{color:#e3defe!important;font-size:12px!important;line-height:1.9}
+.top-actions{padding-top:9px;gap:8px}
+.top-actions .btn{background:#ffffff12;color:#fff;border:1px solid #ffffff45;border-radius:14px;backdrop-filter:blur(8px);padding:10px 13px;box-shadow:inset 0 1px #ffffff12;transition:transform .2s,background .2s,border-color .2s}
+.top-actions .btn:hover{background:#ffffff25;border-color:#ffffff90;transform:translateY(-2px);box-shadow:0 7px 18px #160e3b40}
+.summary{gap:9px;padding:12px 2px 15px;scrollbar-width:thin}
+.filter{background:#ffffffbd;border:1px solid #e2dafa;color:#5e527e;border-radius:15px;padding:10px 15px;font-weight:700;box-shadow:0 4px 12px #53418b0b;transition:transform .18s,background .18s,box-shadow .18s}
+.filter:hover{transform:translateY(-2px);box-shadow:0 7px 15px #53418b18}
+.filter.active{background:linear-gradient(135deg,#7765e8,#b16cce);color:#fff;border-color:transparent;box-shadow:0 7px 18px #7963d947}
+#search{background:#ffffffd9!important;border:1px solid #e4dcf8!important;border-radius:17px!important;box-shadow:0 6px 20px #4432730b!important;padding:14px 16px!important;color:var(--ink)}
+#search::placeholder{color:#9a90b8}
+.grid{gap:16px;align-items:stretch}
+.card{border:1px solid #e5ddf7;border-radius:22px;background:linear-gradient(160deg,#fff 0%,#fdfbff 68%,#f8f6ff 100%);box-shadow:0 8px 24px #39265e0e,0 2px 5px #39265e05;transition:transform .22s,box-shadow .22s,border-color .22s;}
+.card::before{content:"✧";position:absolute;top:7px;inset-inline-start:9px;color:#b5a7e8;font-size:16px;pointer-events:none;z-index:1}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 34px #39265e1b;border-color:#cfc3f4}
+.card-title{background:linear-gradient(115deg,#f0eaff,#fbeafa 56%,#eafaf5);border-bottom:1px solid #ece5fb;color:#33275d;padding:17px 14px 14px;min-height:62px;font-size:clamp(13px,2.3vw,16px);line-height:1.75;text-align:right}
+.card-title:hover{filter:saturate(1.08)}
+.card-body{padding:13px;gap:11px}
+.meta{gap:7px;font-size:11px;color:#7d719e;line-height:1.8}
+.priority-badge{border:1px solid #e9e1fa;background:#f4f0ff;color:#66538e;padding:5px 9px;border-radius:12px;font-size:10px}
+.priority-badge.important{background:#fff4d8;border-color:#f4df9c;color:#91611b}
+.priority-badge.urgent{background:#fff0f4;border-color:#ffc4d4;color:#be365d;box-shadow:none}
+.card.urgent-card{border-color:#f4aac1;box-shadow:0 8px 24px #e85e7515}
+.card.urgent-card .card-title{background:linear-gradient(120deg,#fff0f4,#fff7e9)}
+.card.important-card{border-color:#efdb9e}
+.card.completed{background:linear-gradient(145deg,#effff8,#e1f8ef);border-color:#8bd8b7;box-shadow:0 8px 24px #159b7612}
+.card.completed .card-title{background:linear-gradient(120deg,#d9f8eb,#edfff5);color:#17664f}
+.card.cancelled,.card.postponed{background:linear-gradient(140deg,#f8f7fc,#f1eff8)}
+.desc-toggle{background:#fbf9ff;border-color:#e8e0f8;border-radius:13px;padding:11px 12px;min-height:43px;color:#574878}
+.desc-toggle:hover{background:#f3edff;border-color:#cfc1f4}
+.chev{color:#8876bd}
+.desc{border-color:#e2d8f6;border-radius:13px;background:#fffdfd;color:#40355f;line-height:1.9}
+.actions{gap:9px}
+.action{height:44px;border-radius:14px;font-size:24px;box-shadow:0 3px 9px #33225c08}
+.action:hover{transform:translateY(-2px) scale(1.025);box-shadow:0 7px 15px #33225c13}
+.move{background:#f1efff;border-color:#d3c9fb;color:#6653d0}
+.done{background:#e9fbf3;border-color:#b2ebd1;color:#16805e}
+.cancel{background:#fff0f4;border-color:#ffc7d5;color:#d34367}
+.card-foot{padding:0 13px 13px;align-items:center}
+.mini{font-size:11px;color:#8579a4;text-decoration:none;border-radius:8px;padding:5px 7px}
+.mini:hover{background:#f0eaff;color:#55428d}
+.footer{background:#f8f4ffe8;border-top:1px solid #e4daf9;box-shadow:0 -8px 24px #3b276b0b;backdrop-filter:blur(16px);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+.add{width:62px;height:62px;background:linear-gradient(145deg,#8a76f1,#b66bd2 72%,#d982c0);border:3px solid #ffffffd9;color:#fff;font-size:35px;box-shadow:0 8px 22px #7862d65c,0 0 0 5px #b9a9f32b;transition:transform .2s,box-shadow .2s}
+.add:hover{transform:translateY(-3px) rotate(7deg) scale(1.04);box-shadow:0 12px 26px #7862d66e,0 0 0 7px #b9a9f33b}
+.backdrop{background:#21183e99;backdrop-filter:blur(7px);padding:18px}
+.modal{background:linear-gradient(150deg,#fff 0%,#fcf9ff 100%);border:1px solid #e9dffc;border-radius:26px;padding:23px;box-shadow:0 28px 80px #140d354f;}
+.modal h2{color:#35285e;font-size:21px;line-height:1.7;padding-bottom:9px;border-bottom:1px solid #eee7fa}
+.field label{color:#796c9b;font-weight:700}
+.field input,.field textarea,.field select,.jalali-picker select,.time-picker select{border-color:#e4dcf6;border-radius:13px;background:#fff;box-shadow:inset 0 1px 2px #30204d05;transition:border-color .18s,box-shadow .18s}
+.field input:focus,.field textarea:focus,.field select:focus,.jalali-picker select:focus,.time-picker select:focus{border-color:#9a85ee;box-shadow:0 0 0 4px #9a85ee22;outline:none}
+.primary{background:linear-gradient(130deg,#7662e5,#a363ce);border-radius:13px;box-shadow:0 6px 15px #8064dc35;font-weight:700}
+.primary:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.secondary{background:#f0ecfb;color:#57477e;border:1px solid #e2d9f5;border-radius:13px}
+.danger{background:#fff0f4;color:#b9375c;border:1px solid #ffd3df}
+.small{border-color:#e3daf6;border-radius:9px;color:#5c4c85}
+.rowitem{background:#fff;border-color:#e7dff7;border-radius:12px}
+.historyline{border-color:#e4daf7;color:#786b99;line-height:1.9}
+.notice{border-radius:14px;box-shadow:0 5px 15px #30204d0b;line-height:1.9}
+.empty{border:1px dashed #d7c9f4;border-radius:24px;background:linear-gradient(140deg,#fff,#f7f2ff);color:#77669f;padding:50px 16px;line-height:2.1;box-shadow:0 8px 22px #39265e08}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #a28df2;outline-offset:3px}
+@media(max-width:600px){
+ .app{padding:10px 10px calc(100px + env(safe-area-inset-bottom))}
+ .top{border-radius:22px;padding:17px 15px 15px;gap:10px}
+ .top::before{font-size:9px;inset-inline-end:13px}
+ .date{font-size:clamp(17px,5vw,23px);padding-top:11px}
+ .top-actions{padding-top:3px;gap:6px}
+ .top-actions .btn{font-size:11px;padding:9px 10px;border-radius:11px}
+ .summary{padding-top:10px;gap:7px}
+ .filter{padding:9px 12px;border-radius:13px;font-size:11px}
+ .grid{gap:11px}
+ .card{border-radius:18px}
+ .card-title{min-height:54px;padding:13px 10px;font-size:13px}
+ .card-body{padding:9px;gap:8px}
+ .meta{grid-template-columns:minmax(0,1fr);gap:5px}
+ .meta .priority-badge{justify-self:start;max-width:100%}
+ .actions{gap:6px}.action{height:39px;border-radius:12px}
+ .card-foot{padding:0 9px 9px}
+ .modal{padding:18px;border-radius:22px;max-height:88dvh}
+ .modal h2{font-size:18px}
+}
+@media(max-width:430px){.grid{grid-template-columns:minmax(0,1fr)}.card-title{font-size:15px}.card-body{padding:11px}.meta{grid-template-columns:minmax(0,1fr) auto}.meta .priority-badge{justify-self:end}.actions{gap:9px}.action{height:43px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
+
+/* Version 3.0 — fantasy floating-action style with a contemporary violet / pink / mint palette */
+:root{
+ --ink:#241844; --muted:#756b91; --line:#e6defb; --blue:#6847f5; --green:#078b70; --red:#e34f83; --amber:#b97818;
+ --fantasy-night:#21133f; --fantasy-violet:#6847f5; --fantasy-pink:#ff77b7; --fantasy-mint:#69e5c2; --fantasy-gold:#ffd978;
+ --accent-glow:#8b5cf6;
+}
+html{background:#f8f5ff}
+body{
+ color:var(--ink);
+ background:
+  radial-gradient(ellipse at 8% 8%,#ffd0e8a8 0,transparent 29%),
+  radial-gradient(ellipse at 93% 3%,#cfc7ffbd 0,transparent 32%),
+  radial-gradient(ellipse at 82% 78%,#baf5e5a6 0,transparent 29%),
+  linear-gradient(150deg,#fffbff 0%,#f5f1ff 48%,#effcf8 100%);
+ background-attachment:fixed;
+}
+.top{background:linear-gradient(118deg,#21133f 0%,#4930a4 53%,#7544d9 100%);border-color:#8e75eb;box-shadow:0 18px 42px #4824a52b,inset 0 1px #ffffff3b}
+.top::before{color:#ffe49a}
+.top-actions .btn{border-color:#ffffff55;background:#ffffff12}
+.top-actions .btn:hover{background:#ffffff28;border-color:#ffffffa8}
+.filter{background:#ffffffd9;border-color:#e5ddfb;color:#5b4b82;box-shadow:0 5px 15px #4b2a9810}
+.filter.active{background:linear-gradient(130deg,#6847f5,#b64fce 72%,#ed69b0);box-shadow:0 8px 20px #8a4de33b}
+#search{border-color:#e4dafb!important;box-shadow:0 7px 22px #45218d0d!important}
+.card{border-color:#e8e0f8;background:linear-gradient(155deg,#fff 0%,#fdfaff 68%,#f7f4ff 100%);box-shadow:0 8px 25px #39215e0d,0 2px 6px #39215e05}
+.card:hover{border-color:#c9b9ff;box-shadow:0 17px 36px #5732a51b}
+.card::before{color:#b29cff}
+.card-title{background:linear-gradient(115deg,#eee9ff 0%,#ffe8f4 57%,#e3fbf4 100%);border-bottom-color:#eee6fb;color:#30204f}
+.card.urgent-card{border-color:#ff9cc7;box-shadow:0 8px 24px #e34f8318}
+.card.urgent-card .card-title{background:linear-gradient(115deg,#ffe8f2,#fff0e7)}
+.card.important-card{border-color:#f1d48c}
+.card.completed{background:linear-gradient(145deg,#edfff9,#d9faef);border-color:#70d9b5;box-shadow:0 8px 24px #078b7015}
+.card.completed .card-title{background:linear-gradient(115deg,#c9f8e9,#e8fff5);color:#075e4b}
+.priority-badge{background:#f1edff;border-color:#e1d7ff;color:#6547bd}
+.priority-badge.important{background:#fff5d9;border-color:#f5df9d;color:#8a5a0a}
+.priority-badge.urgent{background:#ffeaf3;border-color:#ffc0d9;color:#bd2e68}
+.desc-toggle{background:#fbf9ff;border-color:#e8e0fa;color:#51416f}
+.desc-toggle:hover{background:#f2edff;border-color:#c9b7ff}
+.move{background:#eeeaff;border-color:#d4c8ff;color:#6041db}
+.done{background:#e4fbf2;border-color:#a5ebd2;color:#087c60}
+.cancel{background:#fff0f5;border-color:#ffc3d7;color:#c93469}
+.footer{background:#fbf8ffeb;border-top-color:#e6dcfa;box-shadow:0 -9px 25px #3b276b0d}
+.add{width:64px;height:64px;background:linear-gradient(145deg,#6847f5 0%,#a64be8 53%,#ff70b6 100%);border:3px solid #fff;color:#fff;font-size:36px;box-shadow:0 9px 25px #8b4de65c,0 0 0 5px #c7b8ff55,0 0 28px #b46af52b;position:relative}
+.add:hover{transform:translateY(-4px) rotate(7deg) scale(1.05);box-shadow:0 13px 30px #8b4de67a,0 0 0 7px #c7b8ff66,0 0 34px #b46af54d}
+.add:focus-visible{outline:3px solid #ff77b7;outline-offset:5px}
+.modal{border-color:#e7dcff;box-shadow:0 28px 85px #1e104a55}
+.modal h2{color:#342052;border-bottom-color:#eee5ff}
+.field label{color:#6f6190}
+.field input,.field textarea,.field select,.jalali-picker select,.time-picker select{border-color:#e3d9fa}
+.field input:focus,.field textarea:focus,.field select:focus,.jalali-picker select:focus,.time-picker select:focus{outline:none;border-color:#8b70f8;box-shadow:0 0 0 3px #8b70f826}
+.primary{background:linear-gradient(130deg,#6847f5,#a64be8 65%,#e965b3);box-shadow:0 6px 16px #8750e72f}
+.secondary{background:#f0ebff;color:#514078}
+.danger{background:#fff0f5;color:#b82f60}
+.btn,.filter,.action,.desc-toggle,.primary,.secondary,.danger,.add{ -webkit-tap-highlight-color:transparent }
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+
+/* Version 3.1 — stronger tactile depth for task cards; keep the UI calm and readable */
+.card{
+  position:relative;
+  border:1px solid #d9cef7;
+  border-bottom:3px solid #d5c8f3;
+  border-radius:23px;
+  background:linear-gradient(155deg,#ffffff 0%,#fdfaff 72%,#f7f2ff 100%);
+  box-shadow:0 3px 0 #e6ddf8,0 9px 20px #3e267018,0 18px 34px #5a3b8b0b,inset 0 1px 0 #ffffff;
+  transform:translateY(0);
+}
+.card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:inset 0 0 0 1px #ffffffb3;
+}
+.card:hover{
+  transform:translateY(-4px);
+  border-color:#bca9f1;
+  border-bottom-color:#a996e6;
+  box-shadow:0 4px 0 #d8caf8,0 15px 28px #45217e21,0 24px 42px #5a3b8b10,inset 0 1px 0 #ffffff;
+}
+.card-title{box-shadow:inset 0 1px 0 #ffffffc9;text-shadow:0 1px 0 #ffffffa8}
+.card-body{position:relative;z-index:1}
+.card.completed{border-color:#a0e4c8;border-bottom-color:#79d4b0;box-shadow:0 3px 0 #d1f4e4,0 10px 22px #12845c16,inset 0 1px 0 #ffffff}
+.card.urgent-card{border-bottom-color:#e98cab;box-shadow:0 3px 0 #f9d4e1,0 10px 22px #c33c6d18}
+.card.important-card{border-bottom-color:#e5cb83;box-shadow:0 3px 0 #f8edc9,0 10px 22px #9c741a12}
+.action{box-shadow:0 3px 0 #30204d0b,0 5px 10px #30204d08}
+.action:active,.add:active,.primary:active{transform:translateY(1px) scale(.98)}
+.add{box-shadow:0 5px 0 #5d3ac7,0 10px 22px #6847f55e,0 0 0 5px #b9a9f333,inset 0 1px 0 #ffffff80}
+@media(prefers-reduced-motion:reduce){.card,.card:hover,.action,.add{transform:none;transition:none}}
+
+
+/* Version 3.2 — mobile readability: uniform type & touch scaling plus a user text-size control (Aa). Layout untouched. */
+:root{--ts:1}
+html[data-ts="L"]{--ts:1.13}
+html[data-ts="XL"]{--ts:1.26}
+#tsBtn{font-weight:700;letter-spacing:.5px}
+@media(min-width:701px){#tsBtn{display:none}}
+@media(max-width:700px){
+ body{font-size:calc(14px*var(--ts))}
+ .date{font-size:calc(22px*var(--ts))}
+ #daySummary{font-size:calc(13px*var(--ts))!important}
+ .top-actions{gap:7px}
+ .top-actions .btn{font-size:calc(13px*var(--ts));padding:11px 13px;min-height:44px}
+ .filter{font-size:calc(13px*var(--ts));padding:11px 14px;min-height:44px}
+ #search{font-size:calc(15px*var(--ts))!important;padding:15px 16px!important}
+ .card-title{font-size:calc(15px*var(--ts))}
+ .meta{font-size:calc(12px*var(--ts))}
+ .priority-badge{font-size:calc(11px*var(--ts));padding:6px 10px}
+ .desc-toggle{font-size:calc(13px*var(--ts));min-height:46px;padding:11px 12px}
+ .desc{font-size:calc(14px*var(--ts))}
+ .action{height:48px;font-size:26px}
+ .mini{font-size:calc(12px*var(--ts));padding:6px 8px;min-height:34px}
+ .empty{font-size:calc(15px*var(--ts))}
+ .add{width:70px;height:70px;font-size:40px}
+ .modal{padding:20px}
+ .modal h2{font-size:calc(20px*var(--ts))}
+ .field label{font-size:calc(13px*var(--ts))}
+ .field input,.field textarea,.field select,.jalali-picker select,.time-picker select{font-size:calc(15px*var(--ts));padding:12px}
+ .modal-actions .primary,.modal-actions .secondary,.modal-actions .danger{font-size:calc(15px*var(--ts));padding:12px 16px;min-height:46px}
+ .notice{font-size:calc(13px*var(--ts))}
+ .historyline{font-size:calc(12.5px*var(--ts))}
+ .rowitem{font-size:calc(14px*var(--ts))}
+ .small{font-size:calc(12px*var(--ts));padding:8px 10px}
+ p[style*="font-size:11px"],p[style*="font-size:12px"]{font-size:calc(12.5px*var(--ts))!important}
+}
+
+
+/* V4.0 — beta chip, system banners, update bar */
+.beta-chip{position:fixed;bottom:calc(92px + env(safe-area-inset-bottom));inset-inline-start:10px;z-index:4;background:#21133fe0;color:#ffe49a;font-size:10px;font-weight:700;padding:5px 10px;border-radius:999px;border:1px solid #8e75eb99;backdrop-filter:blur(6px);pointer-events:none}
+@media(min-width:701px){.beta-chip{bottom:14px}}
+.sysbanner{margin:0 0 10px;border-radius:14px;padding:10px 13px;font-size:13px;line-height:1.9;border:1px solid;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sysbanner[hidden]{display:none}
+.sysbanner.warn{background:#fff8e8;border-color:#f2d18d;color:#805500}
+.sysbanner.err{background:#fff0f0;border-color:#f0a6a1;color:#a02a2a}
+.sysbanner.upd{background:#eef3ff;border-color:#a9ccff;color:#28518f}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="beta-chip" title="نسخه آزمایشی">نسخه آزمایشی ۴.۰</div>
+ <header class="top"><div><div class="date" id="date">امروز</div><div id="daySummary" style="font-size:11px;color:#607695;margin-top:5px"></div></div>
+ <div class="top-actions"><button class="btn" id="tsBtn" title="اندازهٔ متن">Aa</button><button class="btn" id="settingsOpen">⚙ تنظیمات</button><button class="btn" id="notifyBtn">🔔 فعال‌سازی یادآوری</button><button class="btn" id="exportBtn">خروجی پشتیبان</button><button class="btn" id="importBtn">بازیابی</button><input id="importFile" type="file" accept="application/json" hidden></div></header>
+ <div class="notice" id="notice"></div>
+ <div class="sysbanner warn" id="offlineBanner" hidden>🔌 اتصال اینترنت قطع است — برنامه به‌صورت آفلاین کار می‌کند و اطلاعات روی همین دستگاه ذخیره می‌شود.</div>
+ <div class="sysbanner err" id="storageBanner" hidden>⚠ خطای ذخیره‌سازی — تغییرات اخیر ذخیره نشده‌اند. لطفاً «خروجی پشتیبان» را بگیرید.</div>
+ <div class="sysbanner upd" id="updateBanner" hidden>🚀 نسخه جدید آماده است. <button class="small" id="updateBtn">به‌روزرسانی</button></div>
+ <nav class="summary" id="filters">
+  <button class="filter active" data-filter="today">امروز</button><button class="filter" data-filter="overdue">عقب‌افتاده</button><button class="filter" data-filter="upcoming">آینده</button><button class="filter" data-filter="all">همه فعال‌ها</button><button class="filter" data-filter="completed">انجام‌شده</button><button class="filter" data-filter="cancelled">لغوشده</button><button class="filter" data-filter="history">سوابق انتقال</button>
+ </nav>
+ <div class="field" style="margin-bottom:10px"><input id="search" placeholder="جست‌وجو در عنوان و توضیحات…" aria-label="جست‌وجو"></div>
+ <main id="grid" class="grid" aria-label="کارها"></main>
+</div>
+<div class="footer"><button class="add" id="add" aria-label="افزودن کار" title="افزودن کار">+</button></div>
+
+<div class="backdrop" id="taskModal" role="dialog" aria-modal="true">
+ <section class="modal"><h2 id="taskModalHeading">ثبت کار جدید</h2>
+  <div class="field"><label>تاریخ انجام / سررسید (شمسی)</label><div class="jalali-picker" data-picker="taskDate"><select aria-label="سال شمسی" class="jy"></select><select aria-label="ماه شمسی" class="jm"></select><select aria-label="روز شمسی" class="jd"></select></div><input type="date" id="taskDate" required hidden></div>
+  <div class="field"><label>ساعت یادآوری (اختیاری)</label><div class="time-picker" data-time-picker="taskTime"><select class="hour" aria-label="ساعت"><option value="">ساعت</option></select><span>:</span><select class="minute" aria-label="دقیقه"><option value="">دقیقه</option></select><button type="button" class="small clear-time">بدون ساعت</button></div><input type="time" id="taskTime" hidden></div>
+  <div class="field"><label for="taskTitleSelect">عنوان کار</label><select id="taskTitleSelect"></select></div>
+  <div class="field" id="customTitleWrap" hidden><label for="taskCustomTitle">عنوان دلخواه</label><input id="taskCustomTitle" maxlength="120" placeholder="عنوان دلخواه را وارد کنید"></div>
+  <div class="field"><label for="taskDescription">یادداشت و توضیحات</label><textarea id="taskDescription" placeholder="توضیحات کامل یا متن کپی‌شده را اینجا وارد کنید…"></textarea></div>
+  <div class="field"><label for="taskPriority">اولویت</label><select id="taskPriority"><option value="normal">عادی</option><option value="important">مهم</option><option value="urgent">فوری</option></select></div>
+  <div class="modal-actions"><button class="primary" id="taskSave">ذخیره کار</button><button class="secondary" id="taskClose">انصراف</button></div>
+ </section>
+</div>
+<div class="backdrop" id="transferModal" role="dialog" aria-modal="true">
+ <section class="modal"><h2>انتقال به تاریخ جدید و ساخت پیگیری</h2>
+  <div class="field"><label>تاریخ پیگیری (شمسی)</label><div class="jalali-picker" data-picker="transferDate"><select aria-label="سال شمسی" class="jy"></select><select aria-label="ماه شمسی" class="jm"></select><select aria-label="روز شمسی" class="jd"></select></div><input type="date" id="transferDate" required hidden></div>
+  <div class="field"><label>ساعت یادآوری (اختیاری)</label><div class="time-picker" data-time-picker="transferTime"><select class="hour" aria-label="ساعت"><option value="">ساعت</option></select><span>:</span><select class="minute" aria-label="دقیقه"><option value="">دقیقه</option></select><button type="button" class="small clear-time">بدون ساعت</button></div><input type="time" id="transferTime" value="10:00" hidden></div>
+  <div class="field"><label for="transferTitle">عنوان کار پیگیری</label><input id="transferTitle" maxlength="120" placeholder="مثلاً تماس مجدد با آقای اکبری"></div>
+  <div class="field"><label for="transferNote">یادداشت برای روز سررسید</label><textarea id="transferNote" placeholder="نتیجه تماس امروز و کاری که باید پیگیری شود…"></textarea></div>
+  <div class="field"><label for="transferPriority">اولویت</label><select id="transferPriority"><option value="normal">عادی</option><option value="important">مهم</option><option value="urgent">فوری</option></select></div>
+  <p style="font-size:11px;color:#667a98;line-height:1.8">با ثبت، کار فعلی به سوابق «موکول‌شده» منتقل می‌شود و یک کار مستقل برای تاریخ جدید ساخته خواهد شد. یادداشت و پیوند به کار قبلی حفظ می‌شود.</p>
+  <div class="modal-actions"><button class="primary" id="transferSave">ثبت پیگیری</button><button class="secondary" id="transferClose">انصراف</button></div>
+ </section>
+</div>
+<div class="backdrop" id="settingsModal" role="dialog" aria-modal="true">
+ <section class="modal"><h2>تنظیمات</h2>
+  <div class="field"><label for="newTaskPreset">افزودن عنوان آماده برای فهرست کشویی</label><input id="newTaskPreset" maxlength="120" placeholder="مثلاً تماس با مشتری"></div>
+  <button class="primary" id="addTaskPreset">افزودن عنوان</button><div class="list" id="taskPresetList"></div>
+  <hr style="border:0;border-top:1px solid #e2eaf5;margin:15px 0">
+  <details><summary style="cursor:pointer;font-size:13px">مدیریت وضعیت‌های داخلی</summary><div class="field" style="margin-top:10px"><label for="newTitle">افزودن وضعیت</label><input id="newTitle" maxlength="50" placeholder="مثلاً منتظر پاسخ"></div>
+  <button class="primary" id="addStatus">افزودن وضعیت</button><div class="list" id="statusList"></div></details>
+  <hr style="border:0;border-top:1px solid #e2eaf5;margin:15px 0">
+  <ul style="font-size:12px;line-height:2;color:#667a98;padding-inline-start:18px;margin:0 0 10px">
+<li id="storageStatusLi">ذخیره‌سازی: در حال بررسی…</li>
+<li>همگام‌سازی: در این نسخه وجود ندارد</li>
+<li>اعلان پس‌زمینه: برای فعال‌سازی به سرور Push نیاز است</li>
+<li>اعلان محلی: زمان‌بندی دقیق در پس‌زمینه تضمین نمی‌شود</li>
+</ul>
+<div class="modal-actions"><button class="secondary" id="logExportBtn">خروجی لاگ برای پشتیبانی</button><button class="secondary" id="restoreBackupBtn" hidden>بازگردانی از نسخهٔ قبلی</button><button class="danger" id="wipeBtn">حذف کامل داده‌ها</button></div>
+  <div class="modal-actions"><button class="secondary" id="settingsClose">بستن</button></div>
+ </section>
+</div>
+<div class="backdrop" id="historyModal" role="dialog" aria-modal="true">
+ <section class="modal"><h2>سابقه کار</h2><div id="historyContent"></div><div class="modal-actions"><button class="secondary" id="historyClose">بستن</button></div></section>
+</div>
+<script src="js/idb.js"></script>
+<script src="js/quota.js"></script>
+<script src="js/logger.js"></script>
+<script src="js/migration.js"></script>
+<script src="js/repository.js"></script>
+<script>
+const KEY='yar_kareha_v2';
+const defaultStatuses=['برنامه‌ریزی','در حال انجام','تکمیل‌شده','منتظر پاسخ'];
+const defaultTaskTitles=['تماس تلفنی','پرداخت قبض','پیگیری موضوع','تأمین وجه چک','مراجعه حضوری','خرید'];
+const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const nowISO=()=>new Date().toISOString();
+let state={statuses:defaultStatuses,taskTitles:[...defaultTaskTitles],tasks:[],events:[]},currentFilter='today',transferId=null;
+let storageMode='pending',storageError=false,bootDone=false;
+function legacyRead(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.statuses)&&Array.isArray(s.tasks))return{statuses:s.statuses,taskTitles:(Array.isArray(s.taskTitles)?s.taskTitles:defaultTaskTitles).filter(x=>x!=='سایر / عنوان جدید'),tasks:s.tasks,events:Array.isArray(s.events)?s.events:[]}}catch(e){}return null}
+function normalizeRecordFull(t){const r=Object.assign({},t);if(typeof r.id!=='string'||!r.id)r.id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,9);if(typeof r.createdAt!=='string')r.createdAt=new Date().toISOString();if(typeof r.updatedAt!=='string')r.updatedAt=r.createdAt;r.schemaVersion=1;if(typeof r.recordVersion!=='number')r.recordVersion=1;return r}
+async function replaceAllStores(st){
+ const records=st.tasks.map(normalizeRecordFull);
+ await KarIDB.atomicWrite(records,[['app_meta',{statuses:st.statuses,taskTitles:st.taskTitles||[],events:st.events||[]}],['_migration_v1_done',{at:new Date().toISOString(),count:records.length}]]);
+ try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}
+ KarRepo.resetCache();
+}
+function persist(){
+ if(!bootDone||storageMode!=='idb'){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(e){showNotice('ذخیره‌سازی محلی ناموفق بود.');return false}}
+ KarRepo.saveApp(state).then(function(r){if(storageError){storageError=false;KarQuota.clear();render();}KarLogger.log('info','save',{changed:r.changed});}).catch(function(e){storageError=true;render();KarQuota.show(e);});
+ return true;
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,9)}
+function addEvent(task,type,note=''){state.events.unshift({id:uid(),taskId:task.id,title:task.title,type,note,at:nowISO()})}
+function newTask(data={}){return {id:uid(),title:data.title||'عنوان کار',description:data.description||'',status:data.status||state.statuses[0]||'برنامه‌ریزی',dueDate:data.dueDate||todayISO(),dueTime:data.dueTime||'',priority:data.priority||'normal',state:data.state||'active',expanded:false,createdAt:nowISO(),updatedAt:nowISO(),parentId:data.parentId||null,history:[]}}
+// Do not create nine fake/blank tasks on first launch. Start with a clear empty state.
+function showNotice(s){const n=document.getElementById('notice');n.textContent=s;n.classList.add('show')}
+function fmtDate(iso){if(!iso)return 'بدون تاریخ';try{return new Intl.DateTimeFormat('fa-IR-u-ca-persian',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(iso+'T12:00:00'))}catch(e){return iso}}
+const jalaliFmt=new Intl.DateTimeFormat('en-US-u-ca-persian-nu-latn',{year:'numeric',month:'numeric',day:'numeric'});
+function jalaliPartsFromISO(iso){const d=new Date((iso||todayISO())+'T12:00:00');const o={};jalaliFmt.formatToParts(d).forEach(p=>{if(['year','month','day'].includes(p.type))o[p.type]=Number(p.value)});return o}
+function isoForJalali(y,m,d){const start=new Date(y+621,2,18,12);for(let i=0;i<370;i++){const g=new Date(start);g.setDate(start.getDate()+i);const iso=`${g.getFullYear()}-${String(g.getMonth()+1).padStart(2,'0')}-${String(g.getDate()).padStart(2,'0')}`;const q=jalaliPartsFromISO(iso);if(q.year===y&&q.month===m&&q.day===d)return iso}return ''}
+const jalaliMonths=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+function setupJalaliPicker(id,iso){const root=document.querySelector(`[data-picker="${id}"]`);if(!root)return;const ys=root.querySelector('.jy'),ms=root.querySelector('.jm'),ds=root.querySelector('.jd');const parts=jalaliPartsFromISO(iso||todayISO());const base=jalaliPartsFromISO(todayISO()).year;const yearStart=Math.min(base-5,parts.year),yearEnd=Math.max(base+10,parts.year);ys.innerHTML=Array.from({length:yearEnd-yearStart+1},(_,i)=>yearStart+i).map(y=>`<option value="${y}">${y.toLocaleString('fa-IR')}</option>`).join('');ms.innerHTML=jalaliMonths.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('');ys.value=parts.year;ms.value=parts.month;function days(){const y=+ys.value,m=+ms.value,old=+ds.value||parts.day;ds.innerHTML=Array.from({length:31},(_,i)=>i+1).map(d=>{const valid=!!isoForJalali(y,m,d);return `<option value="${d}" ${valid?'':'disabled'}>${d.toLocaleString('fa-IR')}</option>`}).join('');ds.value=String(Math.min(old,31));if(ds.selectedOptions[0]?.disabled){const valid=[...ds.options].find(o=>!o.disabled);if(valid)ds.value=valid.value}sync()}function sync(){document.getElementById(id).value=isoForJalali(+ys.value,+ms.value,+ds.value)}ys.onchange=days;ms.onchange=days;ds.onchange=sync;days();ds.value=String(parts.day);sync()}
+
+function fmtStamp(s){try{return new Intl.DateTimeFormat('fa-IR-u-ca-persian',{dateStyle:'short',timeStyle:'short'}).format(new Date(s))}catch(e){return s}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function isOverdue(t){return t.state==='active'&&t.dueDate&&t.dueDate<todayISO()}
+function getFiltered(){
+ const q=document.getElementById('search').value.trim().toLocaleLowerCase('fa');
+ return state.tasks.filter(t=>{
+  const text=(t.title+' '+t.description).toLocaleLowerCase('fa');if(q&&!text.includes(q))return false;
+  if(currentFilter==='today')return t.dueDate===todayISO()&&(t.state==='active'||t.state==='completed');
+  if(currentFilter==='overdue')return isOverdue(t);
+  if(currentFilter==='upcoming')return t.state==='active'&&t.dueDate>todayISO();
+  if(currentFilter==='all')return t.state==='active';
+  if(currentFilter==='completed')return t.state==='completed';
+  if(currentFilter==='cancelled')return t.state==='cancelled';
+  if(currentFilter==='history')return t.state==='postponed';
+  return true;
+ }).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||'')||({urgent:0,important:1,normal:2}[a.priority]??2)-({urgent:0,important:1,normal:2}[b.priority]??2));
+}
+function render(){
+ const grid=document.getElementById('grid'),tasks=getFiltered();
+ document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b.dataset.filter===currentFilter));
+ const active=state.tasks.filter(t=>t.state==='active'),due=active.filter(t=>t.dueDate===todayISO()).length,late=active.filter(isOverdue).length;
+ document.getElementById('daySummary').textContent=`امروز: ${due} کار  •  عقب‌افتاده: ${late}  •  فعال: ${active.length}`;
+ if(!tasks.length){grid.innerHTML='<div class="empty">در این بخش کاری پیدا نشد.</div>';return}
+ grid.innerHTML=tasks.map(t=>{
+  const cls=[t.state==='completed'?'completed':isOverdue(t)?'overdue':t.state==='cancelled'?'cancelled':t.state==='postponed'?'postponed':'',t.priority==='urgent'&&t.state==='active'?'urgent-card':'',t.priority==='important'&&t.state==='active'?'important-card':''].join(' ');
+  const stateLabel={active:'فعال',completed:'انجام‌شده',cancelled:'لغوشده',postponed:'موکول‌شده'}[t.state]||'فعال';
+  const priorityLabel={normal:'عادی',important:'مهم',urgent:'فوری'}[t.priority]||'عادی';
+  return `<article class="card ${cls}" data-id="${t.id}">
+   <button class="card-title" data-action="edit-title" title="برای ویرایش عنوان لمس کنید">${esc(t.title)}</button>
+   <div class="card-body">
+    <div class="meta"><span>🗓 ${esc(fmtDate(t.dueDate))}${t.dueTime?' · '+esc(t.dueTime):''}</span><span class="priority-badge ${t.priority==='urgent'?'urgent':t.priority==='important'?'important':''}">${t.priority==='urgent'?'🔥':t.priority==='important'?'⭐':'☁️'} ${esc(priorityLabel)}</span></div>
+    <button class="desc-toggle" data-action="toggle-desc" aria-expanded="${!!t.expanded}"><span>${t.description?esc(t.description.replace(/\\s+/g,' ').slice(0,28)):'یادداشت / توضیحات…'}</span><span class="chev">${t.expanded?'⌃':'⌄'}</span></button>
+    <textarea class="desc" data-action="description" placeholder="جزئیات، متن کپی‌شده یا نتیجه پیگیری…" ${t.expanded?'':'hidden'}>${esc(t.description)}</textarea>
+    <div class="actions">
+     <button class="action move" data-action="move" aria-label="انتقال و ساخت پیگیری" title="انتقال و ساخت پیگیری">↗</button>
+     <button class="action done" data-action="done" aria-label="انجام شد" title="انجام شد">✓</button>
+     <button class="action cancel" data-action="cancel" aria-label="لغو کار" title="لغو">×</button>
+    </div>
+   </div>
+   <div class="card-foot"><span class="mini">${esc(stateLabel)}</span><span><button class="mini" data-action="edit-details">ویرایش</button><button class="mini" data-action="history">سابقه</button></span></div>
+  </article>`
+ }).join('');
+}
+function openModal(id){const el=document.getElementById(id);el.classList.add('open');const first=el.querySelector('input:not([type=hidden]),select,textarea,button');if(first)requestAnimationFrame(()=>first.focus())}
+function closeModal(id){const el=document.getElementById(id);el.classList.remove('open');if(id==='taskModal')document.getElementById('add').focus()}
+document.getElementById('grid').addEventListener('click',e=>{
+ const b=e.target.closest('[data-action]');if(!b)return;const card=b.closest('.card'),t=state.tasks.find(x=>x.id===card.dataset.id);if(!t)return;
+ switch(b.dataset.action){
+ case 'toggle-desc':t.expanded=!t.expanded;persist();render();if(t.expanded)document.querySelector(`[data-id="${t.id}"] textarea`)?.focus();break;
+ case 'edit-title':openTaskModal(t);break
+ case 'edit-details':openTaskModal(t);break
+ case 'cancel':if(confirm('این کار لغو شود؟ در سوابق باقی می‌ماند.')){t.state='cancelled';t.updatedAt=nowISO();addEvent(t,'لغو کار');persist();render();showNotice('کار از صفحه حذف شد و سابقه آن حفظ شد. برای مشاهده، بخش لغوشده‌ها را باز کنید.')}break;
+ case 'done':if(t.state==='completed'){if(confirm('این کار دوباره به حالت فعال برگردد؟')){t.state='active';t.status=state.statuses[0]||'برنامه‌ریزی';addEvent(t,'بازگشت به کارهای فعال')}}else{t.state='completed';t.status=state.statuses.includes('تکمیل‌شده')?'تکمیل‌شده':t.status;t.completedAt=nowISO();addEvent(t,'انجام شد','تاریخ انجام: '+fmtStamp(t.completedAt))}t.updatedAt=nowISO();persist();render();if(t.state==='completed')showNotice('کار انجام‌شده و خانه آن سبز شد.');break;
+ case 'move':transferId=t.id;document.getElementById('transferDate').value=t.dueDate>todayISO()?t.dueDate:(()=>{let d=new Date();d.setDate(d.getDate()+3);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`})();setupJalaliPicker('transferDate',document.getElementById('transferDate').value);setupTimePicker('transferTime',t.dueTime||'10:00');document.getElementById('transferTitle').value=t.title.startsWith('پیگیری: ')?t.title:'پیگیری: '+t.title;document.getElementById('transferNote').value=t.description?`سابقه و توضیحات قبلی: ${t.description}\\n\\nاقدام بعدی:`:'اقدام بعدی:';document.getElementById('transferPriority').value=t.priority;openModal('transferModal');break;
+ case 'history':showHistory(t);openModal('historyModal');break;
+ }
+});
+document.getElementById('grid').addEventListener('input',e=>{if(e.target.matches('textarea[data-action="description"]')){const t=state.tasks.find(x=>x.id===e.target.closest('.card').dataset.id);if(t){t.description=e.target.value;t.updatedAt=nowISO();persist();const label=e.target.closest('.card').querySelector('.desc-toggle span:first-child');label.textContent=t.description?t.description.replace(/\s+/g,' ').slice(0,28):'یادداشت / توضیحات…'}}});
+document.getElementById('grid').addEventListener('change',e=>{
+ const card=e.target.closest('.card');if(!card)return;const t=state.tasks.find(x=>x.id===card.dataset.id);if(!t)return;
+ if(e.target.matches('select[data-action="status"]')){t.status=e.target.value;if(e.target.value==='تکمیل‌شده'){t.state='completed';t.completedAt=nowISO();addEvent(t,'انجام شد')}t.updatedAt=nowISO();persist();render()}
+});
+document.getElementById('grid').addEventListener('change',e=>{
+ if(e.target.matches('input[data-action="due"]')){const t=state.tasks.find(x=>x.id===e.target.closest('.card').dataset.id);if(t){t.dueDate=e.target.value;t.updatedAt=nowISO();addEvent(t,'تغییر تاریخ',fmtDate(t.dueDate));persist();render()}}
+});
+document.getElementById('add').addEventListener('click',()=>{try{openTaskModal(null)}catch(err){console.error(err);showNotice('فرم ثبت کار باز نشد. صفحه را تازه‌سازی کنید؛ اگر مشکل ماند، فایل نسخه جدید را باز کنید.')}});
+document.getElementById('filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){currentFilter=b.dataset.filter;render()}});
+document.getElementById('search').addEventListener('input',render);
+document.getElementById('transferClose').addEventListener('click',()=>closeModal('transferModal'));
+document.getElementById('transferSave').addEventListener('click',()=>{
+ const old=state.tasks.find(x=>x.id===transferId);if(!old)return;const date=document.getElementById('transferDate').value;if(!date){alert('تاریخ پیگیری را انتخاب کنید.');return}if(date<todayISO()&&!confirm('تاریخ انتخاب‌شده در گذشته است. ادامه می‌دهید؟'))return;
+ const title=document.getElementById('transferTitle').value.trim()||('پیگیری: '+old.title),note=document.getElementById('transferNote').value.trim(),time=document.getElementById('transferTime').value,priority=document.getElementById('transferPriority').value;
+ old.state='postponed';old.updatedAt=nowISO();old.history=old.history||[];old.history.push({type:'موکول شد',at:nowISO(),note:`پیگیری جدید برای ${fmtDate(date)} ساخته شد.`});addEvent(old,'موکول شد',`پیگیری جدید برای ${fmtDate(date)} ساخته شد.`);
+ const next=newTask({title,description:note,status:state.statuses[0]||'برنامه‌ریزی',dueDate:date,dueTime:time,priority,parentId:old.id});state.tasks.push(next);addEvent(next,'ساخت پیگیری',`مرتبط با کار قبلی: ${old.title}`);if(!persist()){state.tasks.pop();old.state='active';return}closeModal('transferModal');currentFilter='all';render();showNotice('پیگیری جدید ساخته شد. کار قبلی در سوابق انتقال باقی ماند.');transferId=null;
+});
+let editingTaskId=null;
+function setupTimePicker(id,value=''){
+ const wrap=document.querySelector(`[data-time-picker="${id}"]`),input=document.getElementById(id);if(!wrap||!input)return;
+ const hour=wrap.querySelector('.hour'),minute=wrap.querySelector('.minute');
+ if(hour.options.length===1){for(let h=0;h<24;h++){const o=document.createElement('option');o.value=String(h).padStart(2,'0');o.textContent=String(h).padStart(2,'0');hour.appendChild(o)}for(let m=0;m<60;m++){const o=document.createElement('option');o.value=String(m).padStart(2,'0');o.textContent=String(m).padStart(2,'0');minute.appendChild(o)}}
+ input.value=value||'';hour.value=value?value.slice(0,2):'';minute.value=value?value.slice(3,5):'';
+ const sync=()=>{input.value=hour.value!==''&&minute.value!==''?`${hour.value}:${minute.value}`:''};
+ hour.onchange=sync;minute.onchange=sync;wrap.querySelector('.clear-time').onclick=()=>{hour.value='';minute.value='';input.value=''};
+}
+setupTimePicker('taskTime','');setupTimePicker('transferTime','10:00');
+function renderTaskTitleOptions(selected=''){
+ const select=document.getElementById('taskTitleSelect');
+ select.innerHTML=state.taskTitles.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')+`<option value="__custom__">＋ عنوان جدید…</option>`;
+ if(selected&&state.taskTitles.includes(selected))select.value=selected;else if(selected){select.value='__custom__';document.getElementById('taskCustomTitle').value=selected;}else select.selectedIndex=0;
+ document.getElementById('customTitleWrap').hidden=select.value!=='__custom__';
+}
+function openTaskModal(task){
+ editingTaskId=task?task.id:null;
+ document.getElementById('taskModalHeading').textContent=task?'ویرایش کامل کار':'ثبت کار جدید';
+ document.getElementById('taskDate').value=task?.dueDate||todayISO();setupJalaliPicker('taskDate',task?.dueDate||todayISO());
+ setupTimePicker('taskTime',task?.dueTime||'');
+ document.getElementById('taskDescription').value=task?.description||'';
+ document.getElementById('taskPriority').value=task?.priority||'normal';
+ document.getElementById('taskCustomTitle').value='';
+ renderTaskTitleOptions(task?.title||'');
+ openModal('taskModal');
+}
+document.getElementById('taskTitleSelect').addEventListener('change',e=>{
+ const custom=e.target.value==='__custom__';document.getElementById('customTitleWrap').hidden=!custom;
+ if(custom)document.getElementById('taskCustomTitle').focus();
+});
+document.getElementById('taskClose').addEventListener('click',()=>closeModal('taskModal'));
+document.getElementById('taskSave').addEventListener('click',()=>{
+ const date=document.getElementById('taskDate').value;
+ const selected=document.getElementById('taskTitleSelect').value;
+ const title=(selected==='__custom__'?document.getElementById('taskCustomTitle').value:selected).trim();
+ if(!date){alert('لطفاً تاریخ کار را انتخاب کنید.');return}
+ if(!title){alert('لطفاً عنوان کار را انتخاب یا وارد کنید.');return}
+ const description=document.getElementById('taskDescription').value.trim(),dueTime=document.getElementById('taskTime').value,priority=document.getElementById('taskPriority').value;
+ if(selected==='__custom__'&&!state.taskTitles.includes(title)){state.taskTitles.push(title)}
+ if(editingTaskId){const t=state.tasks.find(x=>x.id===editingTaskId);if(!t)return;const oldTitle=t.title;t.title=title;t.dueDate=date;t.dueTime=dueTime;t.description=description;t.priority=priority;t.updatedAt=nowISO();addEvent(t,'ویرایش اطلاعات',`عنوان: ${title} | تاریخ: ${fmtDate(date)}`);if(oldTitle!==title)addEvent(t,'تغییر عنوان',`${oldTitle} ← ${title}`)}
+ else{const t=newTask({title,description,dueDate:date,dueTime,priority});state.tasks.push(t);addEvent(t,'ایجاد کار',`سررسید: ${fmtDate(date)}`)}
+ if(!persist())return;closeModal('taskModal');currentFilter=date<todayISO()?'overdue':date===todayISO()?'today':'upcoming';render();
+});
+function renderTaskPresets(){document.getElementById('taskPresetList').innerHTML=state.taskTitles.map((s,i)=>`<div class="rowitem"><span>${esc(s)}</span><span><button class="small" data-preset-edit="${i}">ویرایش</button> <button class="small" data-preset-del="${i}">حذف</button></span></div>`).join('')||'<p>عنوانی ثبت نشده است.</p>'}
+document.getElementById('addTaskPreset').addEventListener('click',()=>{const el=document.getElementById('newTaskPreset'),v=el.value.trim();if(!v)return;if(state.taskTitles.includes(v)){alert('این عنوان از قبل وجود دارد.');return}state.taskTitles.push(v);el.value='';persist();renderTaskPresets()});
+document.getElementById('taskPresetList').addEventListener('click',e=>{const edit=e.target.closest('[data-preset-edit]'),del=e.target.closest('[data-preset-del]');if(edit){const i=+edit.dataset.presetEdit,old=state.taskTitles[i],v=prompt('عنوان جدید:',old);if(v&&v.trim()){const next=v.trim();if(state.taskTitles.includes(next)){alert('این عنوان از قبل وجود دارد.');return}state.taskTitles[i]=next;persist();renderTaskPresets()}}if(del){const i=+del.dataset.presetDel,old=state.taskTitles[i];if(!confirm(`عنوان «${old}» از فهرست انتخاب حذف شود؟ کارهای قبلی تغییر نمی‌کنند.`))return;state.taskTitles.splice(i,1);persist();renderTaskPresets()}});
+document.getElementById('settingsOpen').addEventListener('click',()=>{renderStatuses();renderTaskPresets();openModal('settingsModal')});
+document.getElementById('settingsClose').addEventListener('click',()=>closeModal('settingsModal'));
+document.getElementById('logExportBtn').addEventListener('click',()=>{const blob=new Blob([KarLogger.exportText()],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='kar-yar-log-'+todayISO()+'.json';a.click();URL.revokeObjectURL(url);});
+document.getElementById('wipeBtn').addEventListener('click',async()=>{
+ if(!confirm('همهٔ کارها، سوابق و تنظیمات برای همیشه حذف شوند؟ این عمل بازگشت‌پذیر نیست.'))return;
+ if(!confirm('تأیید نهایی: حذف کامل انجام شود؟ پیشنهاد می‌کنیم اول «خروجی پشتیبان» بگیرید.'))return;
+ try{
+  await KarRepo.wipeAll();try{localStorage.removeItem(KEY)}catch(e){}
+  state={statuses:defaultStatuses,taskTitles:[...defaultTaskTitles],tasks:[],events:[]};
+  persist();render();closeModal('settingsModal');showNotice('همهٔ داده‌ها حذف شد.');
+ }catch(e){alert('حذف کامل ناموفق بود: '+((e&&e.message)||'خطای ناشناخته'))}
+});
+document.getElementById('restoreBackupBtn').addEventListener('click',async()=>{
+ try{
+  const b=await KarRepo.getBackup('_migration_backup_v1');
+  if(!b||!b.value){alert('نسخهٔ پشتیبان زمان مهاجرت پیدا نشد.');return}
+  if(!confirm('اطلاعات فعلی با نسخهٔ پشتیبانِ زمان مهاجرت جایگزین شود؟ از وضعیت فعلی هم پشتیبان گرفته می‌شود.'))return;
+  await KarRepo.putBackup('_pre_restore_backup',JSON.parse(JSON.stringify(state)));
+  const s=b.value;
+  if(!Array.isArray(s.statuses)||!Array.isArray(s.tasks)){alert('پشتیبان معتبر نیست.');return}
+  state={statuses:s.statuses,taskTitles:Array.isArray(s.taskTitles)?s.taskTitles:[...defaultTaskTitles],tasks:s.tasks,events:Array.isArray(s.events)?s.events:[]};
+  await replaceAllStores(state);
+  render();closeModal('settingsModal');showNotice('بازگردانی از نسخهٔ قبلی انجام شد.');
+ }catch(e){alert('بازگردانی ناموفق بود: '+((e&&e.message)||'خطای ناشناخته'))}
+});
+document.getElementById('addStatus').addEventListener('click',()=>{const el=document.getElementById('newTitle'),v=el.value.trim();if(!v)return;if(state.statuses.includes(v)){alert('این وضعیت از قبل وجود دارد.');return}state.statuses.push(v);el.value='';persist();renderStatuses();render()});
+function renderStatuses(){document.getElementById('statusList').innerHTML=state.statuses.map((s,i)=>`<div class="rowitem"><span>${esc(s)}</span><span><button class="small" data-edit="${i}">ویرایش</button> <button class="small" data-del="${i}">حذف</button></span></div>`).join('')}
+document.getElementById('statusList').addEventListener('click',e=>{const a=e.target.closest('[data-edit]'),d=e.target.closest('[data-del]');if(a){const i=+a.dataset.edit,old=state.statuses[i],v=prompt('نام وضعیت:',old);if(v&&v.trim()){const n=v.trim();if(state.statuses.includes(n)){alert('این وضعیت وجود دارد.');return}state.statuses[i]=n;state.tasks.forEach(t=>{if(t.status===old)t.status=n});persist();renderStatuses();render()}}if(d){const i=+d.dataset.del,old=state.statuses[i];if(!confirm(`وضعیت «${old}» حذف شود؟ کارها حذف نمی‌شوند.`))return;state.statuses.splice(i,1);state.tasks.forEach(t=>{if(t.status===old)t.status=state.statuses[0]||'بدون وضعیت'});persist();renderStatuses();render()}});
+function showHistory(t){const related=state.events.filter(e=>e.taskId===t.id||state.tasks.some(x=>x.id===t.id&&x.parentId===e.taskId));document.getElementById('historyContent').innerHTML=`<p><b>${esc(t.title)}</b></p><p style="font-size:12px;color:#667a98">سررسید: ${esc(fmtDate(t.dueDate))} ${esc(t.dueTime||'')}</p>`+(related.length?related.map(e=>`<div class="historyline"><b>${esc(e.type)}</b> · ${esc(fmtStamp(e.at))}<br>${esc(e.note||'')}</div>`).join(''):'<p>سابقه‌ای ثبت نشده است.</p>')+(t.parentId?`<p class="historyline">شناسه کار قبلی: ${esc(t.parentId)}</p>`:'')}
+document.getElementById('historyClose').addEventListener('click',()=>closeModal('historyModal'));
+document.querySelectorAll('.backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
+document.getElementById('exportBtn').addEventListener('click',()=>{const payload={schemaVersion:1,app:'kar-yar',exportedAt:new Date().toISOString(),meta:{statuses:state.statuses,taskTitles:state.taskTitles,events:state.events},tasks:state.tasks};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='kar-yar-backup-'+todayISO()+'.json';a.click();URL.revokeObjectURL(url);KarLogger.log('info','export');showNotice('فایل پشتیبان دانلود شد.')});
+document.getElementById('importBtn').addEventListener('click',()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;
+try{
+ const data=JSON.parse(await f.text());
+ if(data&&data.schemaVersion===1&&Array.isArray(data.tasks)){
+  if(!confirm('تسک‌های فایل با اطلاعات فعلی ادغام می‌شوند (رکوردهای جدیدتر برنده‌اند). ادامه می‌دهید؟')){e.target.value='';return}
+  const clean=data.tasks.filter(KarRepo.isValidRecord),invalid=data.tasks.length-clean.length;
+  await KarRepo.putBackup('_pre_import_backup',JSON.parse(JSON.stringify(state)));
+  let inserted=0,replaced=0,ignored=0;
+  clean.forEach(function(rt){
+   const ex=state.tasks.find(x=>x.id===rt.id);
+   if(!ex){inserted++;state.tasks.push(rt);}
+   else if((rt.updatedAt||'')>(ex.updatedAt||'')){replaced++;Object.keys(rt).forEach(function(k){ex[k]=rt[k]});}
+   else ignored++;
+  });
+  if(data.meta&&Array.isArray(data.meta.statuses)){data.meta.statuses.forEach(function(s){if(!state.statuses.includes(s))state.statuses.push(s)});}
+  if(data.meta&&Array.isArray(data.meta.taskTitles)){data.meta.taskTitles.forEach(function(s){if(!state.taskTitles.includes(s))state.taskTitles.push(s)});}
+  if(data.meta&&Array.isArray(data.meta.events)){data.meta.events.forEach(function(ev){if(ev&&ev.id&&!state.events.some(x=>x.id===ev.id))state.events.push(ev)});}
+  persist();render();showNotice('ادغام انجام شد: '+inserted+' درج، '+replaced+' جایگزینی، '+ignored+' نادیده'+(invalid?('، '+invalid+' نامعتبر'):'')+'.');
+ }else if(data&&Array.isArray(data.statuses)&&Array.isArray(data.tasks)){
+  if(!confirm('این فایل از نسخهٔ قدیمی است و اطلاعات فعلی را «جایگزین» می‌کند. از وضعیت فعلی هم به‌صورت خودکار پشتیبان گرفته می‌شود. ادامه می‌دهید؟')){e.target.value='';return}
+  await KarRepo.putBackup('_pre_import_backup',JSON.parse(JSON.stringify(state)));
+  state={statuses:data.statuses,taskTitles:Array.isArray(data.taskTitles)?data.taskTitles:[...defaultTaskTitles],tasks:data.tasks,events:Array.isArray(data.events)?data.events:[]};
+  await replaceAllStores(state);
+  render();showNotice('بازیابی از نسخهٔ قدیمی انجام شد.');
+ }else{alert('فایل پشتیبان معتبر نیست (schemaVersion ناشناخته است).');}
+}catch(err){alert('فایل پشتیبان معتبر نیست: '+((err&&err.message)||'خطای ناشناخته'))}
+e.target.value=''});
+document.getElementById('notifyBtn').addEventListener('click',async()=>{if(!('Notification'in window)){showNotice('این مرورگر از اعلان‌های وب پشتیبانی نمی‌کند.');return}try{const p=await Notification.requestPermission();showNotice(p==='granted'?'مجوز اعلان صادر شد. در این نسخه، اعلان‌ها فقط تا وقتی صفحه باز است بررسی می‌شوند. برای اعلان مطمئن هنگام بسته بودن برنامه باید نسخه HTTPS با سرویس پس‌زمینه نصب شود.':'مجوز اعلان صادر نشد؛ تنظیمات مرورگر را بررسی کنید.')}catch(e){showNotice('فعال‌سازی اعلان در این محیط ممکن نیست.')}});
+let notified=new Set();
+function checkReminders(){if(!('Notification'in window)||Notification.permission!=='granted')return;const now=new Date();state.tasks.filter(t=>t.state==='active'&&t.dueDate===todayISO()&&t.dueTime).forEach(t=>{const [h,m]=t.dueTime.split(':').map(Number);const key=t.id+'-'+t.dueDate+'-'+t.dueTime;if(now.getHours()===h&&now.getMinutes()===m&&!notified.has(key)){notified.add(key);try{new Notification('یادآوری کار',{body:t.title+(t.description?' — '+t.description.slice(0,100):''),tag:key})}catch(e){}}})}
+function updateDate(){const d=new Date();document.getElementById('date').textContent=new Intl.DateTimeFormat('fa-IR-u-ca-persian',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(d)}
+const TS_KEY='kar_yar_ts',TS_STEPS=[['','اندازهٔ معمولی'],['L','متن بزرگ'],['XL','متن خیلی بزرگ']];
+let tsIdx=0;
+try{const v=localStorage.getItem(TS_KEY);const i=TS_STEPS.findIndex(s=>s[0]===v);if(i>=0)tsIdx=i}catch(e){}
+function applyTs(){if(TS_STEPS[tsIdx][0])document.documentElement.dataset.ts=TS_STEPS[tsIdx][0];else document.documentElement.removeAttribute('data-ts')}
+document.getElementById('tsBtn').addEventListener('click',()=>{tsIdx=(tsIdx+1)%TS_STEPS.length;try{localStorage.setItem(TS_KEY,TS_STEPS[tsIdx][0])}catch(e){}applyTs();showNotice('اندازهٔ متن: '+TS_STEPS[tsIdx][1]);clearTimeout(window.__tsTimer);window.__tsTimer=setTimeout(()=>{document.getElementById('notice').classList.remove('show')},2200)});
+applyTs();
+try{KarQuota.attach({showNotice:showNotice,banner:document.getElementById('storageBanner')})}catch(e){}
+try{KarLogger.init().then(function(){KarLogger.log('info','boot',{page:location.pathname})})}catch(e){}
+async function boot(){
+ try{
+  const mig=await KarMigration.run();
+  const loaded=await KarRepo.loadApp();
+  const li=document.getElementById('storageStatusLi');
+  if(loaded){
+   state={statuses:Array.isArray(loaded.meta.statuses)?loaded.meta.statuses:defaultStatuses,taskTitles:Array.isArray(loaded.meta.taskTitles)?loaded.meta.taskTitles:[...defaultTaskTitles],tasks:loaded.tasks,events:Array.isArray(loaded.meta.events)?loaded.meta.events:[]};
+   storageMode='idb';
+   if(li)li.textContent='ذخیره‌سازی: پایگاه‌دادهٔ محلی IndexedDB (kar-yar-db)';
+   KarMigration.hasBackup().then(function(b){const btn=document.getElementById('restoreBackupBtn');if(btn)btn.hidden=!b;});
+   if(mig.status==='migrated')showNotice('اطلاعات شما به پایگاه‌دادهٔ جدید منتقل شد ('+mig.count+' کار). داده‌های قبلی هم به‌عنوان پشتیبان حفظ شده‌اند.');
+  }else if(mig.status==='failed'){
+   const lg=legacyRead();if(lg)state=lg;
+   storageMode='local';
+   if(li)li.textContent='ذخیره‌سازی: حافظهٔ مرورگر (انتقال به IndexedDB ناموفق بود)';
+   showNotice('انتقال اطلاعات به پایگاه‌دادهٔ جدید ناموفق بود — برنامه با حافظهٔ قبلی کار می‌کند و داده‌های شما حفظ شده‌اند. ('+(mig.error||'')+')');
+  }else if(mig.status==='skipped'){
+   const lg=legacyRead();if(lg)state=lg;
+   storageMode='idb';
+   if(li)li.textContent='ذخیره‌سازی: پایگاه‌دادهٔ محلی IndexedDB (kar-yar-db)';
+  }else{
+   storageMode='idb';
+   if(li)li.textContent='ذخیره‌سازی: پایگاه‌دادهٔ محلی IndexedDB (kar-yar-db)';
+  }
+ }catch(e){
+  storageMode='local';
+  KarLogger.log('error','boot_failed',{name:e&&e.name});
+ }
+ bootDone=true;
+}
+boot().then(function(){updateDate();render();setInterval(()=>{updateDate();checkReminders();render()},30000);});
+</script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',function(){
+ navigator.serviceWorker.register('sw.js').then(function(reg){
+  reg.addEventListener('updatefound',function(){
+   var nw=reg.installing;if(!nw)return;
+   nw.addEventListener('statechange',function(){
+    if(nw.state==='installed'&&navigator.serviceWorker.controller){
+     var b=document.getElementById('updateBanner');if(b)b.hidden=false;
+    }
+   });
+  });
+ }).catch(function(){});
+ navigator.serviceWorker.addEventListener('controllerchange',function(){
+  if(sessionStorage.getItem('kar_yar_reloaded')!=='1'){sessionStorage.setItem('kar_yar_reloaded','1');location.reload();}
+ });
+})}
+var ub=document.getElementById('updateBtn');
+if(ub)ub.addEventListener('click',function(){sessionStorage.setItem('kar_yar_reloaded','1');location.reload();});
+window.addEventListener('offline',function(){var b=document.getElementById('offlineBanner');if(b)b.hidden=false;});
+window.addEventListener('online',function(){var b=document.getElementById('offlineBanner');if(b)b.hidden=true;});
+if(!navigator.onLine){var ob=document.getElementById('offlineBanner');if(ob)ob.hidden=false;}
+</script>
+</body></html>

@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "کار یار ۴.۰ — آزمایشی",
+  "short_name": "کار یار ۴",
+  "description": "نسخهٔ آزمایشی کار یار با پایگاه‌دادهٔ IndexedDB، فونت وزیرمتن و کار آفلاین؛ اطلاعات روی دستگاه خود کاربر ذخیره می‌شود.",
+  "lang": "fa-IR",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#21133f",
+  "theme_color": "#21133f",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
