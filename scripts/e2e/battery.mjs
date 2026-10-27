@@ -345,6 +345,23 @@ async function main() {
       stepLog('T10', `follow=${follow} linked=${linked}`);
       record('T10', 'CP-02', 'انتقال + پیگیری مستقل + سابقه', 'پیگیری با parentId + اصلی در سوابق', follow && linked === 1, `follow=${follow} linked=${linked}`, img);
     }
+
+    /* T11 — یادآوری: فعال‌سازی آسان با یک لمس + اعلان آزمایشی واقعی */
+    {
+      await cdp.send('Browser.grantPermissions', { permissions: ['notifications'], origin: base });
+      await goto(base + '/');
+      await waitFor(cdp, `(document.getElementById('storageStatusLi')||{}).textContent?.includes('IndexedDB')`, 'بوت پس از اعطای مجوز');
+      await evalJS(cdp, `(()=>{const R=window.Notification;window.__notifFired=0;window.Notification=function(t,o){window.__notifFired++;return new R(t,o)};window.Notification.permission=R.permission;window.Notification.requestPermission=R.requestPermission.bind(R);return true})()`);
+      await click('#notifyBtn');
+      await waitFor(cdp, `document.getElementById('notifyBtn').classList.contains('notify-on') && document.getElementById('notifyBtn').textContent.includes('فعال ✓')`, 'دکمه در حالت فعال');
+      const fired = await evalJS(cdp, `window.__notifFired`);
+      const saved = await evalJS(cdp, `localStorage.getItem('kar_yar_notify')`);
+      const perm = await evalJS(cdp, `Notification.permission`);
+      const notice = await text('#notice');
+      const img = await shot(cdp, path.join(SHOT_DIR, '11-notify.png'));
+      stepLog('T11', `fired=${fired} perm=${perm} saved=${saved}`);
+      record('T11', 'CP-02+', 'فعال‌سازی آسان یادآوری (یک لمس)', 'اعلان آزمایشی واقعی + حالت فعال دکمه + ذخیرهٔ انتخاب', fired >= 1 && perm === 'granted' && saved === '1' && notice.includes('یادآوری فعال شد'), `fired=${fired} perm=${perm} saved=${saved}`, img);
+    }
   } catch (e) {
     let pageState = '';
     try { pageState = await evalJS(cdp, `JSON.stringify({notice:(document.getElementById('notice')||{}).textContent,modalOpen:document.getElementById('taskModal')?.classList.contains('open'),filter:document.querySelector('button[data-filter].active')?.dataset.filter,cards:document.querySelectorAll('article.card').length,titles:[...document.querySelectorAll('article.card .card-title')].map(b=>b.textContent),tasks:(typeof state!=='undefined'?state.tasks:[]).map(t=>({t:t.title,d:t.dueDate,s:t.state,p:t.parentId})),errs:(window.__errs||[]).slice(0,4)})`); } catch (_) { }

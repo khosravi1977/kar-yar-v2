@@ -383,6 +383,10 @@ html[data-mode="dark"] .notice{background:#2a2350;border-color:#4d3d85;color:#cf
 html[data-mode="dark"] .sysbanner.warn{background:#3a2f14;border-color:#6b5518;color:#ffd978}
 html[data-mode="dark"] .sysbanner.err{background:#3f1420;border-color:#7a2338;color:#ff9db0}
 html[data-mode="dark"] .sysbanner.upd{background:#14213f;border-color:#2a4a8a;color:#9db9ff}
+
+/* V4.1 — notify button states */
+.notify-on{border-color:#1f5c48!important;background:#e9fbf3!important;color:#12875c!important;font-weight:700}
+html[data-mode="dark"] .notify-on{background:#12332b!important;color:#7ce8c3!important;border-color:#1f5c48!important}
 </style>
 </head>
 <body>
@@ -683,9 +687,26 @@ try{
  }else{alert('فایل پشتیبان معتبر نیست (schemaVersion ناشناخته است).');}
 }catch(err){alert('فایل پشتیبان معتبر نیست: '+((err&&err.message)||'خطای ناشناخته'))}
 e.target.value=''});
-document.getElementById('notifyBtn').addEventListener('click',async()=>{if(!('Notification'in window)){showNotice('این مرورگر از اعلان‌های وب پشتیبانی نمی‌کند.');return}try{const p=await Notification.requestPermission();showNotice(p==='granted'?'مجوز اعلان صادر شد. در این نسخه، اعلان‌ها فقط تا وقتی صفحه باز است بررسی می‌شوند. برای اعلان مطمئن هنگام بسته بودن برنامه باید نسخه HTTPS با سرویس پس‌زمینه نصب شود.':'مجوز اعلان صادر نشد؛ تنظیمات مرورگر را بررسی کنید.')}catch(e){showNotice('فعال‌سازی اعلان در این محیط ممکن نیست.')}});
+function refreshNotifyBtn(){const b=document.getElementById('notifyBtn');if(!b)return;
+ if(!('Notification'in window)||!window.isSecureContext){b.textContent='🔔 یادآوری — در این محیط پشتیبانی نمی‌شود';b.disabled=true;return}
+ if(Notification.permission==='granted'){b.textContent='🔔 یادآوری فعال ✓ (لمس: اعلان آزمایشی)';b.classList.add('notify-on');}
+ else if(Notification.permission==='denied'){b.textContent='🔔 یادآوری — نیاز به اجازه';b.classList.remove('notify-on');}
+ else{b.textContent='🔔 فعال‌سازی یادآوری';b.classList.remove('notify-on');}}
+document.getElementById('notifyBtn').addEventListener('click',async()=>{
+ if(!('Notification'in window)){showNotice('این مرورگر از اعلان پشتیبانی نمی‌کند.');return}
+ if(!window.isSecureContext){showNotice('برای اعلان، برنامه باید روی HTTPS اجرا شود.');return}
+ let p=Notification.permission;
+ if(p==='default'){try{p=await Notification.requestPermission()}catch(e){p='denied'}}
+ if(p==='granted'){
+  try{const n=new Notification('کار یار — یادآوری فعال شد ✓',{body:'یادآوری ساعتیِ کارها تا وقتی برنامه باز است فعال می‌ماند.',tag:'kar-yar-on'});n.onclick=function(){try{window.focus()}catch(e){}}}catch(e){}
+  try{localStorage.setItem('kar_yar_notify','1')}catch(e){}
+  refreshNotifyBtn();showNotice('یادآوری فعال شد و اعلان آزمایشی فرستاده شد. یادآوریِ ساعت‌دارِ کارهای امروز تا وقتی برنامه باز است کار می‌کند؛ اعلان در پس‌زمینهٔ کاملاً بسته نیازمند سرویس Push است (فاز ۲).');
+ }else if(p==='denied'){refreshNotifyBtn();showNotice('اجازهٔ اعلان قبلاً رد شده است. راهکار: تنظیمات مرورگر ← اطلاعات سایت (آیکون ⓘ کنار آدرس) ← اعلان‌ها ← «اجازه» — سپس اینجا دوباره لمس کنید.');}
+ else{refreshNotifyBtn();showNotice('فعال‌سازی کامل نشد؛ یک‌بار دیگر لمس کنید.');}
+});
+refreshNotifyBtn();
 let notified=new Set();
-function checkReminders(){if(!('Notification'in window)||Notification.permission!=='granted')return;const now=new Date();state.tasks.filter(t=>t.state==='active'&&t.dueDate===todayISO()&&t.dueTime).forEach(t=>{const [h,m]=t.dueTime.split(':').map(Number);const key=t.id+'-'+t.dueDate+'-'+t.dueTime;if(now.getHours()===h&&now.getMinutes()===m&&!notified.has(key)){notified.add(key);try{new Notification('یادآوری کار',{body:t.title+(t.description?' — '+t.description.slice(0,100):''),tag:key})}catch(e){}}})}
+function checkReminders(){if(!('Notification'in window)||Notification.permission!=='granted')return;const now=new Date();state.tasks.filter(t=>t.state==='active'&&t.dueDate===todayISO()&&t.dueTime).forEach(t=>{const [h,m]=t.dueTime.split(':').map(Number);const key=t.id+'-'+t.dueDate+'-'+t.dueTime;if(now.getHours()===h&&now.getMinutes()===m&&!notified.has(key)){notified.add(key);try{const n=new Notification('یادآوری کار: '+t.title,{body:(t.description?t.description.slice(0,100)+' — ':'')+'ساعت '+t.dueTime,tag:key});n.onclick=function(){try{window.focus()}catch(e){}}}catch(e){}}})}
 function updateDate(){const d=new Date();document.getElementById('date').textContent=new Intl.DateTimeFormat('fa-IR-u-ca-persian',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(d)}
 const TS_KEY='kar_yar_ts',TS_STEPS=[['','اندازهٔ معمولی'],['L','متن بزرگ'],['XL','متن خیلی بزرگ']];
 let tsIdx=0;
