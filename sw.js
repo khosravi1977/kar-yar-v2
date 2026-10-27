@@ -1,6 +1,6 @@
 /* kar-yar v4 — service worker
    راهبرد: shell → stale-while-revalidate، فونت/آیکون/تصویر → cache-first، ناوبری → network با fallback کش */
-const CACHE_NAME = 'kar-yar-v2-pwa-v2';
+const CACHE_NAME = 'kar-yar-v2-pwa-v3';
 const APP_SHELL = [
   './',
   './index.html',

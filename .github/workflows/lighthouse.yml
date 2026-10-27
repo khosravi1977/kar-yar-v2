@@ -1,0 +1,26 @@
+name: lighthouse
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 1' # اندازه‌گیری هفتگی قابل‌مقایسه (MASTER §11.4)
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+      - name: سرو استاتیک محلی
+        run: |
+          python3 -m http.server 8123 --directory . &
+          sleep 2
+          curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8123/index.html
+      - name: Lighthouse ×2 (Performance + Accessibility)
+        run: |
+          npx --yes lighthouse@11.7.1 http://127.0.0.1:8123/index.html --output=json --output-path=/tmp/lh1.json --only-categories=performance,accessibility --chrome-flags="--headless=new --no-sandbox" --quiet
+          npx --yes lighthouse@11.7.1 http://127.0.0.1:8123/index.html --output=json --output-path=/tmp/lh2.json --only-categories=performance,accessibility --chrome-flags="--headless=new --no-sandbox" --quiet
+      - name: ادعای ≥90 (بهترینِ دو اجرا)
+        run: node scripts/ci/lh-assert.mjs /tmp/lh1.json /tmp/lh2.json

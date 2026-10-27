@@ -1,9 +1,9 @@
-# شواهد باتری E2E مرورگر واقعی (L4 — TEST-MATRIX ردیف ۴ و ۵) — 2026-10-27T03:14:13.188Z
+# شواهد باتری E2E مرورگر واقعی (L4 — TEST-MATRIX ردیف ۴ و ۵) — 2026-10-27T21:44:23.344Z
 
 - مرورگر: `C:\Program Files\Google\Chrome\Application\chrome.exe` (headless، پروفایل یک‌بارمصرف)
 - رانر: Node v24.18.0، CDP خام روی WebSocket داخلی — صفر وابستگی npm
 - رویدادها: واقعی DOM (`el.click()`/`dispatchEvent` — Trap-04)، آفلاین‌سازی واقعی با Network.emulateNetworkConditions
-- اجرا: `node scripts/e2e/battery.mjs` (بودجهٔ ماتریس ≤ ۱۵ دقیقه؛ زمان واقعی 12.0s)
+- اجرا: `node scripts/e2e/battery.mjs` (بودجهٔ ماتریس ≤ ۱۵ دقیقه؛ زمان واقعی 29.5s)
 
 | # | مسیر بحرانی | سناریو | انتظار | نتیجه | خروجی ثبت‌شده | شاهد |
 |---|---|---|---|---|---|---|
@@ -14,5 +14,8 @@
 | T5 | CP-04 | ورودی پشتیبان (schemaVersion:1) | اعلان ادغام + ۴ کار | 🟢 PASS | cards=4 | `docs/evidence/browser/05-import.png` |
 | T6 | CP-05 | بازگردانی از پشتیبان مهاجرت | ۲ کار قدیمی + حذف وارداتی | 🟢 PASS | restored=true | `docs/evidence/browser/06-restore.png` |
 | T7 | CP-06 | حذف کامل با تأیید دومرحله‌ای | grid خالی و پایدار | 🟢 PASS | empty="در این بخش کاری پیدا نشد." | `docs/evidence/browser/07-wipe.png` |
+| T8 | CP-02 | ویرایش کار + قفل ثبت تکراری | دوکلیک ⇒ ۱ کار + عنوان ویرایش‌شده اعمال شود | 🟢 PASS | prefill="" (مسیر عنوان آماده=طبیعی) cards=1 | `docs/evidence/browser/08-edit.png` |
+| T9 | CP-02 | تکمیل کار با تیک | وضعیت completed + دیده‌شدن در فیلتر انجام‌شده | 🟢 PASS | state=completed | `docs/evidence/browser/09-complete.png` |
+| T10 | CP-02 | انتقال + پیگیری مستقل + سابقه | پیگیری با parentId + اصلی در سوابق | 🟢 PASS | follow=true linked=1 | `docs/evidence/browser/10-transfer.png` |
 
-**نتیجه: 7/7 سبز** — باتری E2E کاملاً سبز است.
+**نتیجه: 10/10 سبز** — باتری E2E کاملاً سبز است.

@@ -43,7 +43,7 @@ export async function check(root) {
 }
 
 export async function selfTest() {
-  const rels = ['scripts/ci/check-sw-precache.mjs', 'scripts/ci/check-manifest.mjs', 'scripts/ci/check-storage-contract.mjs', 'scripts/ci/check-js-purity.mjs', 'scripts/ci/check-forbidden.mjs', 'scripts/ci/check-size.mjs', 'scripts/ci/check-test-floor.mjs', 'scripts/ci/check-ci-contract.mjs'];
+  const rels = ['scripts/ci/check-sw-precache.mjs', 'scripts/ci/check-manifest.mjs', 'scripts/ci/check-storage-contract.mjs', 'scripts/ci/check-js-purity.mjs', 'scripts/ci/check-forbidden.mjs', 'scripts/ci/check-size.mjs', 'scripts/ci/check-contrast.mjs', 'scripts/ci/check-test-floor.mjs', 'scripts/ci/check-ci-contract.mjs'];
   const tmp = makeTempTree(rels);
   try {
     const { writeFileSync, mkdirSync } = await import('node:fs');

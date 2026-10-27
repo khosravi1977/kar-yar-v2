@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const GUARDS = ['check-sw-precache.mjs', 'check-manifest.mjs', 'check-storage-contract.mjs', 'check-js-purity.mjs', 'check-forbidden.mjs', 'check-size.mjs', 'check-test-floor.mjs', 'check-ci-contract.mjs'];
+const GUARDS = ['check-sw-precache.mjs', 'check-manifest.mjs', 'check-storage-contract.mjs', 'check-js-purity.mjs', 'check-forbidden.mjs', 'check-size.mjs', 'check-contrast.mjs', 'check-test-floor.mjs', 'check-ci-contract.mjs'];
 const SELF_ONLY = process.argv.includes('--self-tests-only');
 
 let failed = false;
@@ -19,5 +19,5 @@ for (const g of GUARDS) {
   if (!okSelf) console.log('  ↳ self: ' + (self.stdout || '').trim() + (self.stderr || '').trim());
   if (!okReal || !okSelf) failed = true;
 }
-console.log(failed ? 'CHECK-ALL: RED' : 'CHECK-ALL: GREEN (8/8 guards + self-tests)');
+console.log(failed ? 'CHECK-ALL: RED' : `CHECK-ALL: GREEN (${GUARDS.length}/${GUARDS.length} guards + self-tests)`);
 process.exit(failed ? 1 : 0);

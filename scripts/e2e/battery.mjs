@@ -110,7 +110,7 @@ function waitFor(cdp, conditionJs, label, timeoutMs = 8000) {
   return withTimeout(evalJS(cdp, `(async()=>{const t0=Date.now();while(Date.now()-t0<${timeoutMs}){try{if(${conditionJs})return true}catch(_){/*تلاش مجدد*/}await new Promise(r=>setTimeout(r,100))}return false})()`), timeoutMs + 5000, 'waitFor: ' + label)
     .then(ok => { if (!ok) throw new Error('timeout: ' + label); return true; });
 }
-const armDialogs = cdp => evalJS(cdp, 'window.confirm=()=>true;window.prompt=(m,d)=>d;window.alert=()=>{};true');
+const armDialogs = cdp => evalJS(cdp, 'window.confirm=()=>true;window.prompt=(m,d)=>d;window.alert=()=>{};window.__errs=window.__errs||[];window.addEventListener("error",e=>window.__errs.push(e.message+"@"+e.lineno));true');
 
 async function shot(cdp, file) {
   const r = await cdp.send('Page.captureScreenshot', { format: 'png' });
@@ -291,8 +291,64 @@ async function main() {
       stepLog('T7', `empty="${emptyText.trim().slice(0, 40)}"`);
       record('T7', 'CP-06', 'حذف کامل با تأیید دومرحله‌ای', 'grid خالی و پایدار', emptyText.includes('پیدا نشد'), `empty="${emptyText.trim().slice(0, 50)}"`, img);
     }
+
+    /* T8 — BUG-01: ویرایش کار + قفل ثبت تکراری (دوکلیک ⇒ یک کار) */
+    const EDIT_TITLE = 'E2E-ویرایشی';
+    {
+      await click('#add');
+      await waitFor(cdp, `document.getElementById('taskModal').classList.contains('open')`, 'مودال ثبت');
+      await setVal('#taskTitleSelect', '__custom__', 'change');
+      await setVal('#taskCustomTitle', EDIT_TITLE, 'input');
+      await click('#taskSave');
+      await click('#taskSave'); /* حملهٔ دوبله — باید توسط قفل BUG-01 خنثی شود */
+      await waitFor(cdp, `[...document.querySelectorAll('article.card .card-title')].some(b=>b.textContent.includes(${JSON.stringify(EDIT_TITLE)}))`, 'کارت ایجاد شد');
+      await click('article.card .card-title');
+      await waitFor(cdp, `document.getElementById('taskModal').classList.contains('open')`, 'مودال ویرایش');
+      await setVal('#taskTitleSelect', '__custom__', 'change');
+      const prefill = await evalJS(cdp, `document.getElementById('taskCustomTitle').value`);
+      await setVal('#taskCustomTitle', 'E2E-ویرایشی-۲', 'input');
+      await click('#taskSave');
+      await waitFor(cdp, `[...document.querySelectorAll('article.card .card-title')].some(b=>b.textContent.includes('E2E-ویرایشی-۲'))`, 'عنوان ویرایش‌شده');
+      const cards = await count('article.card');
+      const img = await shot(cdp, path.join(SHOT_DIR, '08-edit.png'));
+      stepLog('T8', `prefill="${prefill}" cards=${cards}`);
+      record('T8', 'CP-02', 'ویرایش کار + قفل ثبت تکراری', 'دوکلیک ⇒ ۱ کار + عنوان ویرایش‌شده اعمال شود', cards === 1, `prefill="${prefill}" (مسیر عنوان آماده=طبیعی) cards=${cards}`, img);
+    }
+
+    /* T9 — CP-02: تکمیل کار با تیک و مشاهده در «انجام‌شده» */
+    {
+      await click('article.card .action.done');
+      await waitFor(cdp, `document.querySelector('article.card.completed')`, 'کارت سبز شد');
+      await click('button[data-filter="completed"]');
+      await waitFor(cdp, `document.querySelectorAll('article.card').length===1`, 'در فیلتر انجام‌شده');
+      const stateVal = await evalJS(cdp, `state.tasks[0].state`);
+      const img = await shot(cdp, path.join(SHOT_DIR, '09-complete.png'));
+      stepLog('T9', `state=${stateVal}`);
+      record('T9', 'CP-02', 'تکمیل کار با تیک', 'وضعیت completed + دیده‌شدن در فیلتر انجام‌شده', stateVal === 'completed', `state=${stateVal}`, img);
+    }
+
+    /* T10 — CP-02: انتقال به تاریخ جدید + سابقهٔ موکول‌شده + پیگیری مستقل */
+    {
+      await click('button[data-filter="completed"]');
+      await click('article.card .action.done'); /* برگرداندن به فعال (تأیید شیم شده) */
+      await click('button[data-filter="all"]');
+      await waitFor(cdp, `document.querySelectorAll('article.card').length===1`, 'کار فعال برای انتقال');
+      await click('article.card .action.move');
+      await waitFor(cdp, `document.getElementById('transferModal').classList.contains('open')`, 'مودال انتقال');
+      await click('#transferSave');
+      await waitFor(cdp, `document.querySelectorAll('article.card').length===1 && [...document.querySelectorAll('article.card .card-title')].some(b=>b.textContent.includes('پیگیری:'))`, 'پیگیری جدید در فعال‌ها');
+      const follow = await evalJS(cdp, `[...document.querySelectorAll('article.card .card-title')].some(b=>b.textContent.includes('پیگیری:'))`);
+      const linked = await evalJS(cdp, `state.tasks.filter(t=>t.state==='active').map(t=>t.parentId).filter(Boolean).length`);
+      await click('button[data-filter="history"]');
+      await waitFor(cdp, `document.querySelectorAll('article.card').length===1`, 'اصلی در سوابق انتقال');
+      const img = await shot(cdp, path.join(SHOT_DIR, '10-transfer.png'));
+      stepLog('T10', `follow=${follow} linked=${linked}`);
+      record('T10', 'CP-02', 'انتقال + پیگیری مستقل + سابقه', 'پیگیری با parentId + اصلی در سوابق', follow && linked === 1, `follow=${follow} linked=${linked}`, img);
+    }
   } catch (e) {
-    record('FX', '—', 'خطای زیرساخت باتری', '—', false, (e && e.message || String(e)).slice(0, 300), '');
+    let pageState = '';
+    try { pageState = await evalJS(cdp, `JSON.stringify({notice:(document.getElementById('notice')||{}).textContent,modalOpen:document.getElementById('taskModal')?.classList.contains('open'),filter:document.querySelector('button[data-filter].active')?.dataset.filter,cards:document.querySelectorAll('article.card').length,titles:[...document.querySelectorAll('article.card .card-title')].map(b=>b.textContent),tasks:(typeof state!=='undefined'?state.tasks:[]).map(t=>({t:t.title,d:t.dueDate,s:t.state,p:t.parentId})),errs:(window.__errs||[]).slice(0,4)})`); } catch (_) { }
+    record('FX', '—', 'خطای زیرساخت باتری', '—', false, ((e && e.message || String(e)).slice(0, 200)) + ' PAGE:' + pageState, '');
   } finally {
     if (cdp) cdp.close();
     try { proc.kill(); } catch (_) { }

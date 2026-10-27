@@ -13,7 +13,7 @@ const RULES = [
 ];
 const SCAN_DIRS = ['js', 'tests', 'scripts'];
 // اسکریپت‌های گزارش‌ده خروجی کنسول دارند (شغل‌شان گزارش است) — اجازهٔ صریح، نه عادت (Trap D.2-8)
-const SKIP_FILES = new Set(['lib.mjs', 'check-all.mjs', 'red-injection.mjs']);
+const SKIP_FILES = new Set(['lib.mjs', 'check-all.mjs', 'red-injection.mjs', 'lh-assert.mjs']);
 
 export async function check(root) {
   const hits = [];

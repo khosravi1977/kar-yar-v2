@@ -159,7 +159,7 @@ body{
 .done{background:#e9fbf3;border-color:#b2ebd1;color:#16805e}
 .cancel{background:#fff0f4;border-color:#ffc7d5;color:#d34367}
 .card-foot{padding:0 13px 13px;align-items:center}
-.mini{font-size:11px;color:#8579a4;text-decoration:none;border-radius:8px;padding:5px 7px}
+.mini{font-size:11px;color:#6f63a3;text-decoration:none;border-radius:8px;padding:5px 7px}
 .mini:hover{background:#f0eaff;color:#55428d}
 .footer{background:#f8f4ffe8;border-top:1px solid #e4daf9;box-shadow:0 -8px 24px #3b276b0b;backdrop-filter:blur(16px);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
 .add{width:62px;height:62px;background:linear-gradient(145deg,#8a76f1,#b66bd2 72%,#d982c0);border:3px solid #ffffffd9;color:#fff;font-size:35px;box-shadow:0 8px 22px #7862d65c,0 0 0 5px #b9a9f32b;transition:transform .2s,box-shadow .2s}
@@ -336,6 +336,53 @@ html[data-ts="XL"]{--ts:1.26}
 .sysbanner.warn{background:#fff8e8;border-color:#f2d18d;color:#805500}
 .sysbanner.err{background:#fff0f0;border-color:#f0a6a1;color:#a02a2a}
 .sysbanner.upd{background:#eef3ff;border-color:#a9ccff;color:#28518f}
+
+/* V4.1 — dark mode: html[data-mode] توسط JS ست می‌شود (auto/light/dark) */
+html[data-mode="dark"]{background:#151027;color-scheme:dark}
+html[data-mode="dark"] body{background:radial-gradient(ellipse at 8% 8%,#3a2050b0 0,transparent 29%),radial-gradient(ellipse at 93% 3%,#241d52bb 0,transparent 32%),radial-gradient(ellipse at 82% 78%,#123a30a0 0,transparent 29%),#14102b;background-attachment:fixed;color:#e8e4f7}
+html[data-mode="dark"] .filter{background:#241d45;border-color:#3a2f63;color:#cfc7ee;box-shadow:0 5px 15px #00000040}
+html[data-mode="dark"] .filter.active{color:#fff}
+html[data-mode="dark"] #search{background:#241d45!important;border-color:#3a2f63!important;color:#e8e4f7;box-shadow:0 7px 22px #0000004d!important}
+html[data-mode="dark"] #search::placeholder{color:#8d7fc0}
+html[data-mode="dark"] .card{background:linear-gradient(155deg,#231d42 0,#1f1939 72%,#1c1734 100%);border-color:#3a2f63;border-bottom-color:#352a5c;box-shadow:0 3px 0 #191333,0 9px 20px #00000040}
+html[data-mode="dark"] .card::after{box-shadow:inset 0 0 0 1px #ffffff14}
+html[data-mode="dark"] .card:hover{border-color:#4d3d85;box-shadow:0 4px 0 #241c44,0 15px 28px #00000059}
+html[data-mode="dark"] .card-title{background:linear-gradient(115deg,#2a2350,#2e2549);border-bottom-color:#3a2f63;color:#e8e4f7;text-shadow:none}
+html[data-mode="dark"] .card.completed{background:linear-gradient(145deg,#12332b,#173a2f);border-color:#1f5c48}
+html[data-mode="dark"] .card.completed .card-title{background:linear-gradient(115deg,#14402f,#123329);color:#b9f4dd}
+html[data-mode="dark"] .card.urgent-card{border-color:#6b2340}
+html[data-mode="dark"] .card.urgent-card .card-title{background:linear-gradient(115deg,#3a1a2b,#33222a)}
+html[data-mode="dark"] .card.important-card{border-color:#5c4a1f}
+html[data-mode="dark"] .card.cancelled,html[data-mode="dark"] .card.postponed{background:linear-gradient(140deg,#1e1a33,#1b1730);opacity:.92}
+html[data-mode="dark"] .meta{color:#a89dd0}
+html[data-mode="dark"] .priority-badge{background:#2a2350;border-color:#3a2f63;color:#b9a9ec}
+html[data-mode="dark"] .priority-badge.important{background:#3a2f14;border-color:#6b5518;color:#ffd978}
+html[data-mode="dark"] .priority-badge.urgent{background:#3f1420;border-color:#7a2338;color:#ff9db0}
+html[data-mode="dark"] .desc-toggle{background:#251e46;border-color:#3a2f63;color:#cfc7ee}
+html[data-mode="dark"] .desc-toggle:hover{background:#2c2452;border-color:#4d3d85}
+html[data-mode="dark"] .chev{color:#8d7fc0}
+html[data-mode="dark"] .desc{background:#1c1734;border-color:#3a2f63;color:#d8d2ef}
+html[data-mode="dark"] .move{background:#2a2350;border-color:#4d3d85;color:#b9a9ff}
+html[data-mode="dark"] .done{background:#12332b;border-color:#1f5c48;color:#7ce8c3}
+html[data-mode="dark"] .cancel{background:#3f1420;border-color:#7a2338;color:#ff9db0}
+html[data-mode="dark"] .mini{color:#9d92c4}
+html[data-mode="dark"] .mini:hover{background:#2a2350;color:#cfc7ee}
+html[data-mode="dark"] .footer{background:#1a1435e8;border-top-color:#33285c}
+html[data-mode="dark"] .empty{background:linear-gradient(140deg,#1f1940,#1b1633);border-color:#4a3b80;color:#a99fd0}
+html[data-mode="dark"] .backdrop{background:#0b071999}
+html[data-mode="dark"] .modal{background:linear-gradient(150deg,#221c44,#1d1737);border-color:#3a2f63;color:#e8e4f7;box-shadow:0 28px 85px #000000a6}
+html[data-mode="dark"] .modal h2{color:#e8e4f7;border-bottom-color:#3a2f63}
+html[data-mode="dark"] .field label{color:#a89dd0}
+html[data-mode="dark"] .field input,html[data-mode="dark"] .field textarea,html[data-mode="dark"] .field select,html[data-mode="dark"] .jalali-picker select,html[data-mode="dark"] .time-picker select{background:#1c1734;border-color:#3a2f63;color:#e8e4f7}
+html[data-mode="dark"] .secondary{background:#2a2350;color:#cfc7ee;border-color:#3a2f63}
+html[data-mode="dark"] .danger{background:#3f1420;color:#ff9db0;border-color:#7a2338}
+html[data-mode="dark"] .rowitem{background:#1f1940;border-color:#3a2f63}
+html[data-mode="dark"] .historyline{color:#9d92c4;border-color:#3a2f63}
+html[data-mode="dark"] .small{background:#1c1734;border-color:#3a2f63;color:#cfc7ee}
+html[data-mode="dark"] .notice{background:#2a2350;border-color:#4d3d85;color:#cfc7ee}
+html[data-mode="dark"] .sysbanner.warn{background:#3a2f14;border-color:#6b5518;color:#ffd978}
+html[data-mode="dark"] .sysbanner.err{background:#3f1420;border-color:#7a2338;color:#ff9db0}
+html[data-mode="dark"] .sysbanner.upd{background:#14213f;border-color:#2a4a8a;color:#9db9ff}
 </style>
 </head>
 <body>
@@ -343,10 +390,10 @@ html[data-ts="XL"]{--ts:1.26}
  <div class="beta-chip" title="نسخه آزمایشی">نسخه آزمایشی ۴.۰</div>
  <header class="top"><div><div class="date" id="date">امروز</div><div id="daySummary" style="font-size:11px;color:#607695;margin-top:5px"></div></div>
  <div class="top-actions"><button class="btn" id="tsBtn" title="اندازهٔ متن">Aa</button><button class="btn" id="settingsOpen">⚙ تنظیمات</button><button class="btn" id="notifyBtn">🔔 فعال‌سازی یادآوری</button><button class="btn" id="exportBtn">خروجی پشتیبان</button><button class="btn" id="importBtn">بازیابی</button><input id="importFile" type="file" accept="application/json" hidden></div></header>
- <div class="notice" id="notice"></div>
- <div class="sysbanner warn" id="offlineBanner" hidden>🔌 اتصال اینترنت قطع است — برنامه به‌صورت آفلاین کار می‌کند و اطلاعات روی همین دستگاه ذخیره می‌شود.</div>
- <div class="sysbanner err" id="storageBanner" hidden>⚠ خطای ذخیره‌سازی — تغییرات اخیر ذخیره نشده‌اند. لطفاً «خروجی پشتیبان» را بگیرید.</div>
- <div class="sysbanner upd" id="updateBanner" hidden>🚀 نسخه جدید آماده است. <button class="small" id="updateBtn">به‌روزرسانی</button></div>
+ <div class="notice" id="notice" role="status" aria-live="polite"></div>
+ <div class="sysbanner warn" id="offlineBanner" role="status" hidden>🔌 اتصال اینترنت قطع است — برنامه به‌صورت آفلاین کار می‌کند و اطلاعات روی همین دستگاه ذخیره می‌شود.</div>
+ <div class="sysbanner err" id="storageBanner" role="status" hidden>⚠ خطای ذخیره‌سازی — تغییرات اخیر ذخیره نشده‌اند. لطفاً «خروجی پشتیبان» را بگیرید.</div>
+ <div class="sysbanner upd" id="updateBanner" role="status" hidden>🚀 نسخه جدید آماده است. <button class="small" id="updateBtn">به‌روزرسانی</button></div>
  <nav class="summary" id="filters">
   <button class="filter active" data-filter="today">امروز</button><button class="filter" data-filter="overdue">عقب‌افتاده</button><button class="filter" data-filter="upcoming">آینده</button><button class="filter" data-filter="all">همه فعال‌ها</button><button class="filter" data-filter="completed">انجام‌شده</button><button class="filter" data-filter="cancelled">لغوشده</button><button class="filter" data-filter="history">سوابق انتقال</button>
  </nav>
@@ -391,6 +438,7 @@ html[data-ts="XL"]{--ts:1.26}
 <li>اعلان پس‌زمینه: برای فعال‌سازی به سرور Push نیاز است</li>
 <li>اعلان محلی: زمان‌بندی دقیق در پس‌زمینه تضمین نمی‌شود</li>
 </ul>
+<div class="field"><label>پوستهٔ برنامه</label><div class="modal-actions" style="margin-top:2px"><button class="small" id="themeAuto">خودکار (سیستم)</button><button class="small" id="themeLight">روشن</button><button class="small" id="themeDark">تاریک</button></div></div>
 <div class="modal-actions"><button class="secondary" id="logExportBtn">خروجی لاگ برای پشتیبانی</button><button class="secondary" id="restoreBackupBtn" hidden>بازگردانی از نسخهٔ قبلی</button><button class="danger" id="wipeBtn">حذف کامل داده‌ها</button></div>
   <div class="modal-actions"><button class="secondary" id="settingsClose">بستن</button></div>
  </section>
@@ -416,7 +464,7 @@ function normalizeRecordFull(t){const r=Object.assign({},t);if(typeof r.id!=='st
 async function replaceAllStores(st){
  const records=st.tasks.map(normalizeRecordFull);
  await KarIDB.atomicWrite(records,[['app_meta',{statuses:st.statuses,taskTitles:st.taskTitles||[],events:st.events||[]}],['_migration_v1_done',{at:new Date().toISOString(),count:records.length}]],{clearTasks:true});
- try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}
+ try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){KarLogger.log('warn','mirror_failed',{name:e&&e.name})}
  KarRepo.resetCache();
 }
 function persist(){
@@ -480,7 +528,7 @@ function render(){
  }).join('');
 }
 function openModal(id){const el=document.getElementById(id);el.classList.add('open');const first=el.querySelector('input:not([type=hidden]),select,textarea,button');if(first)requestAnimationFrame(()=>first.focus())}
-function closeModal(id){const el=document.getElementById(id);el.classList.remove('open');if(id==='taskModal')document.getElementById('add').focus()}
+function closeModal(id){const el=document.getElementById(id);el.classList.remove('open');/* قفل ذخیره عمداً تا باز شدن مودال بعدی می‌ماند (BUG-01) */if(id==='taskModal')document.getElementById('add').focus()}
 document.getElementById('grid').addEventListener('click',e=>{
  const b=e.target.closest('[data-action]');if(!b)return;const card=b.closest('.card'),t=state.tasks.find(x=>x.id===card.dataset.id);if(!t)return;
  switch(b.dataset.action){
@@ -489,7 +537,7 @@ document.getElementById('grid').addEventListener('click',e=>{
  case 'edit-details':openTaskModal(t);break
  case 'cancel':if(confirm('این کار لغو شود؟ در سوابق باقی می‌ماند.')){t.state='cancelled';t.updatedAt=nowISO();addEvent(t,'لغو کار');persist();render();showNotice('کار از صفحه حذف شد و سابقه آن حفظ شد. برای مشاهده، بخش لغوشده‌ها را باز کنید.')}break;
  case 'done':if(t.state==='completed'){if(confirm('این کار دوباره به حالت فعال برگردد؟')){t.state='active';t.status=state.statuses[0]||'برنامه‌ریزی';addEvent(t,'بازگشت به کارهای فعال')}}else{t.state='completed';t.status=state.statuses.includes('تکمیل‌شده')?'تکمیل‌شده':t.status;t.completedAt=nowISO();addEvent(t,'انجام شد','تاریخ انجام: '+fmtStamp(t.completedAt))}t.updatedAt=nowISO();persist();render();if(t.state==='completed')showNotice('کار انجام‌شده و خانه آن سبز شد.');break;
- case 'move':transferId=t.id;document.getElementById('transferDate').value=t.dueDate>todayISO()?t.dueDate:(()=>{let d=new Date();d.setDate(d.getDate()+3);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`})();setupJalaliPicker('transferDate',document.getElementById('transferDate').value);setupTimePicker('transferTime',t.dueTime||'10:00');document.getElementById('transferTitle').value=t.title.startsWith('پیگیری: ')?t.title:'پیگیری: '+t.title;document.getElementById('transferNote').value=t.description?`سابقه و توضیحات قبلی: ${t.description}\\n\\nاقدام بعدی:`:'اقدام بعدی:';document.getElementById('transferPriority').value=t.priority;openModal('transferModal');break;
+ case 'move':transferId=t.id;document.getElementById('transferDate').value=t.dueDate>todayISO()?t.dueDate:(()=>{let d=new Date();d.setDate(d.getDate()+3);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`})();setupJalaliPicker('transferDate',document.getElementById('transferDate').value);setupTimePicker('transferTime',t.dueTime||'10:00');document.getElementById('transferTitle').value=t.title.startsWith('پیگیری: ')?t.title:'پیگیری: '+t.title;document.getElementById('transferNote').value=t.description?`سابقه و توضیحات قبلی: ${t.description}\\n\\nاقدام بعدی:`:'اقدام بعدی:';document.getElementById('transferPriority').value=t.priority;window.__transferSaving=false;document.getElementById('transferSave').disabled=false;openModal('transferModal');break;
  case 'history':showHistory(t);openModal('historyModal');break;
  }
 });
@@ -506,6 +554,9 @@ document.getElementById('filters').addEventListener('click',e=>{const b=e.target
 document.getElementById('search').addEventListener('input',render);
 document.getElementById('transferClose').addEventListener('click',()=>closeModal('transferModal'));
 document.getElementById('transferSave').addEventListener('click',()=>{
+ if(window.__transferSaving)return; // BUG-03 (قفل تا بستن مودال)
+ window.__transferSaving=true;
+ document.getElementById('transferSave').disabled=true;
  const old=state.tasks.find(x=>x.id===transferId);if(!old)return;const date=document.getElementById('transferDate').value;if(!date){alert('تاریخ پیگیری را انتخاب کنید.');return}if(date<todayISO()&&!confirm('تاریخ انتخاب‌شده در گذشته است. ادامه می‌دهید؟'))return;
  const title=document.getElementById('transferTitle').value.trim()||('پیگیری: '+old.title),note=document.getElementById('transferNote').value.trim(),time=document.getElementById('transferTime').value,priority=document.getElementById('transferPriority').value;
  old.state='postponed';old.updatedAt=nowISO();old.history=old.history||[];old.history.push({type:'موکول شد',at:nowISO(),note:`پیگیری جدید برای ${fmtDate(date)} ساخته شد.`});addEvent(old,'موکول شد',`پیگیری جدید برای ${fmtDate(date)} ساخته شد.`);
@@ -528,6 +579,7 @@ function renderTaskTitleOptions(selected=''){
  document.getElementById('customTitleWrap').hidden=select.value!=='__custom__';
 }
 function openTaskModal(task){
+ window.__taskSaving=false;document.getElementById('taskSave').disabled=false;
  editingTaskId=task?task.id:null;
  document.getElementById('taskModalHeading').textContent=task?'ویرایش کامل کار':'ثبت کار جدید';
  document.getElementById('taskDate').value=task?.dueDate||todayISO();setupJalaliPicker('taskDate',task?.dueDate||todayISO());
@@ -544,6 +596,9 @@ document.getElementById('taskTitleSelect').addEventListener('change',e=>{
 });
 document.getElementById('taskClose').addEventListener('click',()=>closeModal('taskModal'));
 document.getElementById('taskSave').addEventListener('click',()=>{
+ if(window.__taskSaving)return; // BUG-01: جلوگیری از ثبت تکراری با ضربهٔ دوبله (قفل تا بستن مودال)
+ window.__taskSaving=true;
+ document.getElementById('taskSave').disabled=true;
  const date=document.getElementById('taskDate').value;
  const selected=document.getElementById('taskTitleSelect').value;
  const title=(selected==='__custom__'?document.getElementById('taskCustomTitle').value:selected).trim();
@@ -560,6 +615,16 @@ document.getElementById('addTaskPreset').addEventListener('click',()=>{const el=
 document.getElementById('taskPresetList').addEventListener('click',e=>{const edit=e.target.closest('[data-preset-edit]'),del=e.target.closest('[data-preset-del]');if(edit){const i=+edit.dataset.presetEdit,old=state.taskTitles[i],v=prompt('عنوان جدید:',old);if(v&&v.trim()){const next=v.trim();if(state.taskTitles.includes(next)){alert('این عنوان از قبل وجود دارد.');return}state.taskTitles[i]=next;persist();renderTaskPresets()}}if(del){const i=+del.dataset.presetDel,old=state.taskTitles[i];if(!confirm(`عنوان «${old}» از فهرست انتخاب حذف شود؟ کارهای قبلی تغییر نمی‌کنند.`))return;state.taskTitles.splice(i,1);persist();renderTaskPresets()}});
 document.getElementById('settingsOpen').addEventListener('click',()=>{renderStatuses();renderTaskPresets();openModal('settingsModal')});
 document.getElementById('settingsClose').addEventListener('click',()=>closeModal('settingsModal'));
+const THEME_KEY='kar_yar_theme';
+function applyTheme(){let pref='auto';try{pref=localStorage.getItem(THEME_KEY)||'auto'}catch(e){}
+ let dark=pref==='dark'||(pref==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+ document.documentElement.dataset.mode=dark?'dark':'light';}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme)}catch(e){}
+function setTheme(pref){try{localStorage.setItem(THEME_KEY,pref)}catch(e){}applyTheme();showNotice('پوسته: '+(pref==='auto'?'خودکار':pref==='dark'?'تاریک':'روشن'));}
+document.getElementById('themeAuto').addEventListener('click',function(){setTheme('auto')});
+document.getElementById('themeLight').addEventListener('click',function(){setTheme('light')});
+document.getElementById('themeDark').addEventListener('click',function(){setTheme('dark')});
+applyTheme();
 document.getElementById('logExportBtn').addEventListener('click',()=>{const blob=new Blob([KarLogger.exportText()],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='kar-yar-log-'+todayISO()+'.json';a.click();URL.revokeObjectURL(url);});
 document.getElementById('wipeBtn').addEventListener('click',async()=>{
  if(!confirm('همهٔ کارها، سوابق و تنظیمات برای همیشه حذف شوند؟ این عمل بازگشت‌پذیر نیست.'))return;
@@ -669,14 +734,11 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){
    var nw=reg.installing;if(!nw)return;
    nw.addEventListener('statechange',function(){
     if(nw.state==='installed'&&navigator.serviceWorker.controller){
-     var b=document.getElementById('updateBanner');if(b)b.hidden=false;
+     var b=document.getElementById('updateBanner');if(b)b.hidden=false; /* به‌روزرسانی کنترل‌شده: فقط با دکمهٔ کاربر */
     }
    });
   });
  }).catch(function(){});
- navigator.serviceWorker.addEventListener('controllerchange',function(){
-  if(sessionStorage.getItem('kar_yar_reloaded')!=='1'){sessionStorage.setItem('kar_yar_reloaded','1');location.reload();}
- });
 })}
 var ub=document.getElementById('updateBtn');
 if(ub)ub.addEventListener('click',function(){sessionStorage.setItem('kar_yar_reloaded','1');location.reload();});
