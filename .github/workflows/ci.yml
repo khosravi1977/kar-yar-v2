@@ -1,0 +1,32 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 3 * * 1' # ratchet هفتگی: اندازه‌گیری مجدد اعداد کیفیت (L10)
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+      - name: unit + contract tests (node:test، صفر وابستگی)
+        run: node --test "tests/*.test.mjs"
+      - name: guards (L6) — هر گارد صریح wired (R1)
+        run: |
+          node scripts/ci/check-sw-precache.mjs
+          node scripts/ci/check-manifest.mjs
+          node scripts/ci/check-storage-contract.mjs
+          node scripts/ci/check-js-purity.mjs
+          node scripts/ci/check-forbidden.mjs
+          node scripts/ci/check-size.mjs
+          node scripts/ci/check-test-floor.mjs
+      - name: meta-guard (L8) + self-test تک‌تک گاردها (R2) # شامل check-ci-contract.mjs
+        run: node scripts/ci/check-all.mjs --self-tests-only
+      - name: smoke-fast (L4، ≤3min)
+        run: node scripts/ci/smoke-fast.mjs
+      - name: red-injection evidence (PART C)
+        run: node scripts/red-injection.mjs

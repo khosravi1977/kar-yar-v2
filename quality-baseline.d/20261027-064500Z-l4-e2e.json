@@ -1,0 +1,16 @@
+{
+  "type": "baseline",
+  "measured": {
+    "date": "2026-10-27",
+    "unitTests": 41,
+    "indexHtmlGzipKB": 20.0,
+    "smokeFastSeconds": 0.4,
+    "browserE2eSpecs": 7,
+    "browserE2eSeconds": 11,
+    "browserE2eEvidence": "docs/evidence/browser-battery.md",
+    "browserE2eScreenshots": "docs/evidence/browser/",
+    "redInjection": "8/8 RED",
+    "redInjectionEvidence": "docs/evidence/red-injection.md"
+  },
+  "note": "ورود L4: باتری E2E مرورگر واقعی (CP-01…CP-06) با CDP خام صفر-وابستگی اجرا و ۷/۷ سبز ثبت شد؛ شمارش تست واحد ۴۱ شد (تست atomicWrite/clearTasks). کف‌ها و سقف‌ها تغییری نکرده‌اند (ratchet فقط سخت‌تر می‌شود)."
+}
