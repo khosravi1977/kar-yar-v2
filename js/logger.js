@@ -45,8 +45,8 @@ window.KarLogger = (function () {
   }
 
   function init() {
-    return KarIDB.getMeta('_logs').then(function (stored) {
-      if (stored && Array.isArray(stored.entries)) buf = stored.entries.slice(-MAX);
+    return KarIDB.getMeta('_logs').then(function (rec) {
+      if (rec && rec.value && Array.isArray(rec.value.entries)) buf = rec.value.entries.slice(-MAX);
     }).catch(function () { });
   }
 

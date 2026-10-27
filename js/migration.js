@@ -5,12 +5,17 @@ window.KarMigration = (function () {
   const BACKUP_KEY = '_migration_backup_v1';
   const FLAG_KEY = '_migration_v1_done';
 
+  /* null = هیچ داده‌ای نیست (fresh)؛ {__invalid:true} = داده هست ولی خراب/ناقص است (failed، نه دور ریختن) */
   function readLegacy() {
     try {
-      const s = JSON.parse(localStorage.getItem(LEGACY_KEY) || 'null');
+      const raw = localStorage.getItem(LEGACY_KEY);
+      if (raw === null) return null;
+      const s = JSON.parse(raw);
       if (s && Array.isArray(s.statuses) && Array.isArray(s.tasks)) return s;
-    } catch (e) { }
-    return null;
+      return { __invalid: true };
+    } catch (e) {
+      return { __invalid: true };
+    }
   }
 
   function normalizeRecord(t) {
@@ -28,7 +33,8 @@ window.KarMigration = (function () {
     return KarIDB.getMeta(FLAG_KEY).then(function (flag) {
       if (flag) return { status: 'skipped' };
       const legacy = readLegacy();
-      if (!legacy) return { status: 'fresh' };
+      if (legacy === null) return { status: 'fresh' };
+      if (legacy.__invalid) return { status: 'failed', error: 'ساختار دادهٔ قدیمی معتبر نیست؛ داده‌ها دست‌نخورده حفظ شده‌اند' };
 
       const backup = JSON.parse(JSON.stringify(legacy));
       const records = legacy.tasks.map(normalizeRecord);

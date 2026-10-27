@@ -415,7 +415,7 @@ function legacyRead(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');
 function normalizeRecordFull(t){const r=Object.assign({},t);if(typeof r.id!=='string'||!r.id)r.id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,9);if(typeof r.createdAt!=='string')r.createdAt=new Date().toISOString();if(typeof r.updatedAt!=='string')r.updatedAt=r.createdAt;r.schemaVersion=1;if(typeof r.recordVersion!=='number')r.recordVersion=1;return r}
 async function replaceAllStores(st){
  const records=st.tasks.map(normalizeRecordFull);
- await KarIDB.atomicWrite(records,[['app_meta',{statuses:st.statuses,taskTitles:st.taskTitles||[],events:st.events||[]}],['_migration_v1_done',{at:new Date().toISOString(),count:records.length}]]);
+ await KarIDB.atomicWrite(records,[['app_meta',{statuses:st.statuses,taskTitles:st.taskTitles||[],events:st.events||[]}],['_migration_v1_done',{at:new Date().toISOString(),count:records.length}]],{clearTasks:true});
  try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}
  KarRepo.resetCache();
 }

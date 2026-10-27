@@ -56,12 +56,15 @@ window.KarIDB = (function () {
   }
 
   /* atomic multi-store write: taskRecords → tasks store, metaEntries → _meta store.
+     opts.clearTasks: ابتدا store تسک‌ها در همان تراکنش خالی می‌شود (برای جایگزینی کامل — import/restore)
      هر خطا کل تراکنش را abort می‌کند؛ هیچ نوشتن نیمه‌کاره‌ای باقی نمی‌ماند. */
-  function atomicWrite(taskRecords, metaEntries) {
+  function atomicWrite(taskRecords, metaEntries, opts) {
+    const o = opts || {};
     return open().then(db => new Promise(function (resolve, reject) {
       const t = db.transaction(['tasks', '_meta'], 'readwrite');
       const ts = t.objectStore('tasks'), ms = t.objectStore('_meta');
       try {
+        if (o.clearTasks) ts.clear();
         (taskRecords || []).forEach(r => ts.put(r));
         (metaEntries || []).forEach(en => ms.put({ key: en[0], value: en[1] }));
       } catch (e) { try { t.abort(); } catch (_) {} reject(wrap(e)); return; }

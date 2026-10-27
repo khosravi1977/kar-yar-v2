@@ -3,6 +3,7 @@
    اینترفیس: list / get / create / update / delete / bulkUpsert (+ loadApp/saveApp برای وضعیت اپ) */
 window.KarRepo = (function () {
   let lastSerialized = {}; // id → JSON در آخرین خواندن/نوشتن موفق
+  let lastRecordVersion = {}; // id → آخرین recordVersion ثبت‌شده در IDB (منبع حقیقت: store، نه state)
 
   function wrap(err) {
     err = err || new Error('IndexedDBError');
@@ -76,6 +77,7 @@ window.KarRepo = (function () {
       return hasFlagP.then(meta => {
         if ((!records || !records.length) && !meta) return null;
         const tasks = (records || []).map(function (r) {
+          lastRecordVersion[r.id] = typeof r.recordVersion === 'number' ? r.recordVersion : 0;
           const o = Object.assign({}, r);
           delete o.schemaVersion; delete o.recordVersion;
           lastSerialized[o.id] = ser(o);
@@ -88,27 +90,29 @@ window.KarRepo = (function () {
   }
 
   /* ذخیرهٔ وضعیت اپ: فقط تسک‌هایی که واقعاً تغییر کرده‌اند نوشته می‌شوند (تشخیص با مقایسهٔ محتوا)؛
-     هر تغییر واقعی recordVersion+1 می‌گیرد. updatedAt توسط منطق اپ مدیریت می‌شود. */
+     recordVersion از آخرین مقدارِ ثبت‌شده در IDB +1 می‌شود (قاعدهٔ نسخه‌بندی رکورد). */
   function saveApp(state) {
     const changed = [];
     const cache = {};
+    const rvCache = Object.assign({}, lastRecordVersion);
     state.tasks.forEach(function (t) {
       const s = ser(t);
       cache[t.id] = s;
       if (lastSerialized[t.id] !== s) {
-        const r = Object.assign({}, t);
-        if (typeof r.recordVersion !== 'number') r.recordVersion = 0;
-        r.recordVersion++;
-        r.schemaVersion = 1;
+        const rv = (typeof t.recordVersion === 'number' ? t.recordVersion : (lastRecordVersion[t.id] || 0)) + 1;
+        rvCache[t.id] = rv;
+        const r = Object.assign({}, t, { recordVersion: rv, schemaVersion: 1 });
         changed.push(r);
       }
     });
     const metaEntries = [['app_meta', { statuses: state.statuses, taskTitles: state.taskTitles, events: state.events }]];
     return KarIDB.atomicWrite(changed, metaEntries).then(function () {
       lastSerialized = cache;
+      lastRecordVersion = rvCache;
       return { changed: changed.length, quota: false };
     }).catch(function (e) {
       lastSerialized = {}; // دفعهٔ بعد کامل بازنویسی می‌شود
+      lastRecordVersion = {};
       throw e;
     });
   }
@@ -118,26 +122,31 @@ window.KarRepo = (function () {
   function getBackup(key) { return KarIDB.getMeta(key); }
 
   /* حذف کامل داده‌ها (هر دو store) — فقط با تأیید دو مرحله‌ای از UI */
-  function wipeAll() { lastSerialized = {}; return KarIDB.clearAll(); }
+  function wipeAll() { lastSerialized = {}; lastRecordVersion = {}; return KarIDB.clearAll(); }
 
   /* پس از بازنویسی کامل stores از بیرون (replaceAllStores) کش تشخیص تغییر باید خالی شود */
-  function resetCache() { lastSerialized = {}; }
+  function resetCache() { lastSerialized = {}; lastRecordVersion = {}; }
 
   /* create/update/delete طبق اینترفیس فاز اول */
   function create(record) {
     if (!isValidRecord(record)) return Promise.reject(wrap(new Error('InvalidRecord')));
     const r = norm(record);
-    lastSerialized[r.id] = ser(Object.assign({}, r, { schemaVersion: undefined, recordVersion: undefined }));
+    r.recordVersion = (lastRecordVersion[r.id] || 0) + 1;
+    const bare = Object.assign({}, r); delete bare.schemaVersion; delete bare.recordVersion;
+    lastSerialized[r.id] = ser(bare);
+    lastRecordVersion[r.id] = r.recordVersion;
     return KarIDB.atomicWrite([r], []).then(() => r);
   }
   function update(record) {
     if (!isValidRecord(record)) return Promise.reject(wrap(new Error('InvalidRecord')));
     const r = norm(record);
-    r.recordVersion = (typeof record.recordVersion === 'number' ? record.recordVersion : 0) + 1;
-    lastSerialized[r.id] = ser(Object.assign({}, r, { schemaVersion: undefined, recordVersion: undefined }));
+    r.recordVersion = (lastRecordVersion[r.id] || (typeof record.recordVersion === 'number' ? record.recordVersion : 0)) + 1;
+    const bare = Object.assign({}, r); delete bare.schemaVersion; delete bare.recordVersion;
+    lastSerialized[r.id] = ser(bare);
+    lastRecordVersion[r.id] = r.recordVersion;
     return KarIDB.atomicWrite([r], []).then(() => r);
   }
-  function _delete(id) { delete lastSerialized[id]; return KarIDB.open().then(db => new Promise((res, rej) => { const t = db.transaction('tasks', 'readwrite'); t.objectStore('tasks').delete(id); t.oncomplete = () => res(true); t.onerror = () => rej(wrap(t.error)); })); }
+  function _delete(id) { delete lastSerialized[id]; delete lastRecordVersion[id]; return KarIDB.open().then(db => new Promise((res, rej) => { const t = db.transaction('tasks', 'readwrite'); t.objectStore('tasks').delete(id); t.oncomplete = () => res(true); t.onerror = () => rej(wrap(t.error)); })); }
 
   return {
     isValidRecord: isValidRecord,
